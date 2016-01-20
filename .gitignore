@@ -29,3 +29,6 @@
 
 # Ignores CMakeCache.txt and CMakeCache directory
 CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile
