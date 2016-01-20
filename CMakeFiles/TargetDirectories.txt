@@ -1,1 +1,0 @@
-/home/serrainoalesio/Projects/tre/tre/CMakeFiles/example.dir
