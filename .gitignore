@@ -26,3 +26,6 @@
 *.exe
 *.out
 *.app
+
+# Ignores CMakeCache.txt and CMakeCache directory
+CMakeCache.txt
