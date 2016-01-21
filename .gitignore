@@ -32,3 +32,9 @@ CMakeCache.txt
 CMakeFiles/*
 cmake_install.cmake
 Makefile
+
+# Ignore the datasets
+data/*
+
+# Ignore python compiled files
+*.pyc
