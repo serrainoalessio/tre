@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(tre) # Name of the project
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14 -L /lib64") # C++14 mode
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14") # C++14 mode
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic") # Enambles all warnings
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY lib/)
