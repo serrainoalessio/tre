@@ -1,11 +1,11 @@
-#include "include/image/image.h"
-#include "misc.h"
+#include "image/image.hpp"
+#include "misc.hpp"
 #include <cassert>
 
 //enable some safe checks lowering performances 
 #define IMAGE_SAFE 1
 
-Image::Image(Mat& src):rows(src.rows),cols(src.cols){
+Image::Image(cv::Mat& src):rows(src.rows),cols(src.cols){
 	this->allocate();
 
 	//8-bit single channel image ( uchar in range 0-255)
@@ -13,21 +13,25 @@ Image::Image(Mat& src):rows(src.rows),cols(src.cols){
 
 	//copy and map range of the data
 	float* ptr = this->data.get();
-	for(uint i = 0;i < img.cols*img.rows;i++)ptr[i] = float(src.data[i])/255.0f;
+	for(uint i = 0;i < cols*rows;i++)ptr[i] = float(src.data[i])/255.0f;
 }
 
-Image::allocate(){
+Image::Image(int _rows,int _cols):rows(_rows),cols(_cols){
+	this->allocate();
+}
+
+void Image::allocate(){
 	//allocate the image data 32-bit aligned to enable fast avx functions
 	data.reset((float*)aligned_alloc(32, rows * cols * sizeof(float)));
 }
 
 float& Image::operator() (int x,int y){
 	#if IMAGE_SAFE == 1
-		x = keepInRange(x,0,img.cols-1);
-		y = keepInRange(y,0,img.rows-1);
+		x = keepInRange<uint>(x,0,cols-1);
+		y = keepInRange<uint>(y,0,rows-1);
 	#endif
 
-	return data.get()[y*img.cols+x];
+	return data.get()[y*cols+x];
 }
 
 float Image::get(float x,float y){
@@ -51,5 +55,8 @@ void Image::add(float x,float y,float v){
 	(*this)( ceil(x), ceil(y)) += v*(    wx)*(    wy);
 	(*this)(floor(x), ceil(y)) += v*(1 - wx)*(    wy);
 	(*this)( ceil(x),floor(y)) += v*(    wx)*(1 - wy);
+}
 
+cv::Mat Image::toMat() const{
+	return cv::Mat(rows, cols,CV_32FC1,data.get());
 }
