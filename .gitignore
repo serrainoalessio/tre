@@ -33,6 +33,9 @@ CMakeFiles/*
 cmake_install.cmake
 Makefile
 
+lib/* # Compiled library folder
+bin/* # Compiled executables folder
+
 # Ignore the datasets
 data/*
 

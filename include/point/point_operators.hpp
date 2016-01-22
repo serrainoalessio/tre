@@ -1,9 +1,9 @@
 #ifndef POINT_OPERATORS_HPP
 #define POINT_OPERATORS_HPP
 
-#include "point.hpp"
-#include "../geometry_approx.hpp"
-#include <algorithm>
+#include "point/point.hpp"
+#include "geometry_approx.hpp"
+#include <algorithm> // std::all_of, std::any_of
 #include <functional>
 
 template <class operation, typename float_type, int dim> point<float_type, dim>
@@ -18,7 +18,7 @@ template <bool approx, typename float_type, int dim>
     if (approx) {
         return std::all_of(op1.coords.begin(),
                            op1.coords.end(),
-                           [op1begin, op2begin](const float_type& i) -> bool { return valcmp_equals(i, *(op2begin + (&i - op1begin))); });
+                           [op1begin, op2begin](const float_type& i) -> bool { return eq(i, *(op2begin + (&i - op1begin))); });
     } else {
         return std::all_of(op1.coords.begin(),
                            op1.coords.end(),
@@ -35,7 +35,7 @@ template <bool approx, typename float_type, int dim>
     if (approx) {
         return std::any_of(op1.coords.begin(),
                            op1.coords.end(),
-                           [op1begin, op2begin](const float_type& i) -> bool { return valcmp_nequals(i, *(op2begin + (&i - op1begin))); });
+                           [op1begin, op2begin](const float_type& i) -> bool { return eq(i, *(op2begin + (&i - op1begin))); });
     } else {
         return std::any_of(op1.coords.begin(),
                            op1.coords.end(),
@@ -61,7 +61,7 @@ template <class operation, typename float_type, int dim> point<float_type, dim>
 {
     static_assert(std::is_same<decltype(op1.coords), std::array<float_type, dim>>::value,
                   "You must use an array type to store point coordinates");
-    
+
     point<float_type, dim> result;
     std::transform(op1.coords.begin(), op1.coords.end(), op2.coords.begin(), result.coords.begin(), operation());
     return result;

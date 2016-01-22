@@ -1,15 +1,15 @@
 #ifndef POINT_ALIGNED_HPP
 #define POINT_ALIGNED_HPP
 
-#include "point.hpp"
-
+#include "point/point.hpp"
+#include "geometry_approx.hpp"
 
 template <typename float_type, int dim>
 bool aligned(const point<float_type, dim>& op1, const point<float_type, dim>& op2, const point<float_type, dim>& op3)
 {
     float_type lratio, id_ratio, tmp, tmp2;
     if (op1 == op2 || op1 == op3 || op2 == op3)
-        return false;
+        return false; // it might be true or false
     lratio = euclidean_distance(op1, op2)/euclidean_distance(op1, op3);
     for (size_t i = 0; i < dim; i++) {
         tmp = diffid(op1, op3, i);

@@ -1,8 +1,8 @@
 #ifndef POINT_DISTANCE_HPP
 #define POINT_DISTANCE_HPP
 
-#include "point.hpp"
-#include "../basicmath.hpp"
+#include "point/point.hpp"
+#include "geometry_approx.hpp"
 
 template <typename float_type, int dim>
     float_type minkowsky_distancen(const point<float_type, dim>& op1,
@@ -61,21 +61,20 @@ template <typename float_type, int dim>
 }
 
 
-template <typename float_type, int dim> float_type diffid(const point<float_type, dim>& op1,
-                                                          const point<float_type, dim>& op2, size_t n)
+template <typename float_type, int dim>
+    float_type diffid(const point<float_type, dim>& op1, const point<float_type, dim>& op2, size_t n)
 { // single coordinate (signed) difference
     return op2(n) - op1(n);
 }
 
 /*** SPECIFIC FUNCTIONS ****/
-
-template <typename float_type, int dim> float_type diffx(const point<float_type, dim>& op1,
-                                                         const point<float_type, dim>& op2)
+template <typename float_type, int dim> float_type
+    diffx(const point<float_type, dim>& op1, const point<float_type, dim>& op2)
 {
     return op2.X() - op1.X();
 }
-template <typename float_type, int dim> float_type diffy(const point<float_type, dim>& op1,
-                                                         const point<float_type, dim>& op2)
+template <typename float_type, int dim>
+    float_type diffy(const point<float_type, dim>& op1, const point<float_type, dim>& op2)
 {
     return op2.Y() - op1.Y();
 }
