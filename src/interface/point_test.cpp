@@ -3,8 +3,8 @@
 using namespace std;
 
 int main() {
-    Point<2> A(3, 5), B(1, 7), C;
+    point2d_t A(3, 5), B(1, 7), C;
     C = A + B; // points are vector
-    cout << C << endl;
+    cout << C.X() << " " << C.Y() << endl;
     return 0;
 }

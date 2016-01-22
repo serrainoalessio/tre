@@ -96,9 +96,4 @@ template <typename float_type, int dim>
 template <typename float_type, int dim>
     bool centroid_weight(std::initializer_list<std::pair<const point<float_type, dim>>, int>);
 
-#include "point/point_distance.hpp"
-#include "point/point_operators.hpp"
-#include "point/point_aligned.hpp"
-#include "point/point_centroid.hpp"
-
 #endif // POINT_HPP defined
