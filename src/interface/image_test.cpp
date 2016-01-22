@@ -2,4 +2,11 @@
  *   IMAGE TEST CODE GOES HERE
  */
 
- int main() {} // otherwise wont compile to an application
+#include "image/image.h"
+
+int main(){
+	Image test(200,200);
+
+	imshow("test",test.toMat());
+	waitkey(0);
+}

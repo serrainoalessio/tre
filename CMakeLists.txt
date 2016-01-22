@@ -21,10 +21,10 @@ find_package(OpenCV REQUIRED) # Required opencv for this project
 
 set(DIR_SOURCES_IMAGE "src/image")
 file(GLOB SOURCES_IMAGE ${DIR_SOURCES_IMAGE}/*.cpp)
-add_library(image, ${SOURCES_IMAGE})
+add_library(image ${SOURCES_IMAGE})
 target_link_libraries(image ${OpenCV_LIBS}) # link against OpenCV libs
 add_executable(image_test src/image_test.cpp) # Compiles the executable
 target_link_libraries(image_test image) # Links the image library
 # ==========================================
 
-add_executable(example src/interface/example.cpp)
+# add_executable(example src/interface/example.cpp)
