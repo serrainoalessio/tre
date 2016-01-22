@@ -3,6 +3,7 @@
 
 #include <array>
 #include <utility> // std::pair
+#include <algorithm>
 #include <initializer_list>
 
 template <typename float_type, int dim = 2>
@@ -25,7 +26,9 @@ public:
     /*************************************************/
 
     // constructors
-    point(std::initializer_list<float_type>coordinates): coords(coordinates) {}
+    point(std::initializer_list<float_type> coordinates) {
+        std::copy(coordinates.begin(), coordinates.begin() + coords.size(), coords.begin());
+    }
     point(float_type X = 0, float_type Y = 0): coords({X, Y}) {}
     point(const point<float_type, dim>& Pt): coords(Pt.coords) {} // copy constructor
     ~point() {} // destructor
@@ -90,10 +93,10 @@ template <typename float_type, int dim>
 template <typename float_type, int dim>
     bool aligned(const point<float_type, dim>& op1, const point<float_type, dim>& op2, const point<float_type, dim>& op3);
 template <typename float_type, int dim>
-    bool aligned(std::initializer_list<const point<float_type, dim>> pts);
+    bool aligned(std::initializer_list< const point<float_type, dim> > pts);
 template <typename float_type, int dim>
-    bool centroid(std::initializer_list<const point<float_type, dim>> pts);
+    bool centroid(std::initializer_list< const point<float_type, dim> > pts);
 template <typename float_type, int dim>
-    bool centroid_weight(std::initializer_list<std::pair<const point<float_type, dim>>, int>);
+    bool centroid_weight(std::initializer_list< std::pair< const point<float_type, dim>, int > >);
 
 #endif // POINT_HPP defined
