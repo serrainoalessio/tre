@@ -40,6 +40,17 @@ class Point:
 
 		ctx.fill()
 
+	def angleTo(self,other):
+		dx = other.x - self.x
+		dy = other.y - self.y
+
+		angle = math.atan2(dy,dx)
+
+		if angle < 0:
+			angle += math.pi*2
+
+		return angle
+
 class Segment:
 	def __init__(self,a,b):
 		self.a = a
@@ -52,6 +63,22 @@ class Segment:
 		ctx.move_to(self.a.x, self.a.y)
 		ctx.line_to(self.b.x, self.b.y)
 		ctx.stroke()
+
+class Angle:
+	def __init__(self,p,a,b,s,e):
+		self.point = p
+		self.a = a
+		self.b = b
+		self.start = s
+		self.end = e
+
+	def draw(self,ctx):
+		ctx.set_source_rgb (0, 0, 1)
+		ctx.move_to(self.point.x, self.point.y)
+		ctx.arc(self.point.x, self.point.y, 15, self.start, self.end)
+		ctx.line_to(self.point.x, self.point.y)
+
+		ctx.fill()
 
 def readMNIST(images_path = "data/train-images", lables_path  = "data/train-labels"):
 	with open( lables_path, 'rb') as file:
@@ -76,6 +103,12 @@ def readMNIST(images_path = "data/train-images", lables_path  = "data/train-labe
 
 	return images
 
+def angleDistance(a,b):
+	res = b - a
+	if res < 0:
+		res += math.pi*2
+
+	return res
 
 class Window(Gtk.Window):
 
@@ -101,6 +134,7 @@ class Window(Gtk.Window):
 		self.images = readMNIST()
 		self.points = []
 		self.segments = []
+		self.angles = []
 
 		self.hoverPoint = None
 		self.lineStart = None
@@ -112,8 +146,13 @@ class Window(Gtk.Window):
 		previous = Gtk.Button("Previous Image")
 		previous.connect("clicked", self.loadPreviousImage)
 
+		save = Gtk.Button("Save")
+		save.connect("clicked", self.save)
+
+		self.table.attach(save, 0, 1, 0, 1)
 		self.table.attach(previous, 4, 5, 0, 1)
 		self.table.attach(next, 5, 6, 0, 1)
+
 		self.table.attach(self.darea,0,6,1,2)
 
 		self.set_title(title)
@@ -135,11 +174,46 @@ class Window(Gtk.Window):
 			ctx.line_to(self.lineEnd[0], self.lineEnd[1]) 
 			ctx.stroke()
 
+		for a in self.angles:
+			a.draw(ctx)
+
 		for s in self.segments:
 			s.draw(ctx,False)
 
 		for p in self.points:
 			p.draw(ctx,p == self.hoverPoint or p == self.lineStart)
+
+	def save(self,ev):
+		dialog = Gtk.FileChooserDialog("Save Project", self,Gtk.FileChooserAction.SAVE, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL ,Gtk.STOCK_OK, Gtk.ResponseType.OK))
+		dialog.set_filename("tre.mod")
+
+		filter = Gtk.FileFilter()
+		filter.set_name("Models")
+		filter.add_pattern("*.mod")
+
+		dialog.add_filter(filter)
+
+
+		response = dialog.run()
+		if response == Gtk.ResponseType.OK:
+			path = dialog.get_filename()
+			print(path, 'selected')
+			f = open(path,'w')
+			f.write('label: '+str(self.images[self.currentImageIndex].label)+"\n")
+			f.write('points:\n')
+			for p in self.points:
+				f.write(str(p.x*2/self.w - 1)+" "+str(p.y*2/self.h - 1)+"\n")
+			f.write('segments:\n')
+			for s in self.segments:
+				f.write(str(self.points.index(s.a))+" "+str(self.points.index(s.b))+"\n")		
+			f.write('angles:\n')
+			for s in self.angles:
+				f.write(str(self.points.index(s.a))+" "+str(self.points.index(s.point))+" "+str(self.points.index(s.b))+"\n")	
+			f.close() # you can omit in most cases as the destructor will call 
+
+		elif response == Gtk.ResponseType.CANCEL:
+			print 'Closed, no files selected'
+		dialog.destroy()
 
 	def on_key(self,w,ev):
 		key = ev.keyval
@@ -177,6 +251,7 @@ class Window(Gtk.Window):
 	def reset(self):
 		self.segments = []
 		self.points = []
+		self.angles = []
 		self.darea.queue_draw()
 	
 	def showNumber(self,n):
@@ -194,12 +269,45 @@ class Window(Gtk.Window):
 		self.currentImageIndex -= 1
 		self.reset()
 
+	def getConnectedPoints(self,point):
+		res = []
+		for s in self.segments:
+			if s.a == point:
+				res.append( (s.b,point.angleTo(s.b)) )
+			elif s.b == point:
+				res.append( (s.a,point.angleTo(s.a)) )
+
+		return res
+
+	def computeAngles(self):
+		self.angles = []
+
+		for point in self.points:
+			connectedPoints = self.getConnectedPoints(point)
+			if len(connectedPoints) < 2:
+				continue
+
+			sorted(connectedPoints, key = lambda x: x[1])
+
+			count = len(connectedPoints) - 1
+
+			for i in range(-1,len(connectedPoints)-1):
+				#print(count)
+				if count == 0:
+					break
+				if angleDistance(connectedPoints[i][1],connectedPoints[i+1][1]) < math.pi:
+					count -= 1
+					#print(connectedPoints[i][1]*180/(math.pi),connectedPoints[i+1][1]*180/(math.pi))
+					self.angles.append(Angle(point,connectedPoints[i][0],connectedPoints[i+1][0],connectedPoints[i][1],connectedPoints[i+1][1]))
+
+
 	def on_button_press(self, w, e):
 
 		if e.button == 1:#left click
 			if self.hoverPoint: #if clicked on point
 				if self.lineStart != None and self.lineStart != self.hoverPoint:
 					self.segments.append(Segment(self.lineStart,self.hoverPoint))
+					self.computeAngles()
 					self.lineStart = self.hoverPoint
 				else:				
 					self.lineStart = self.hoverPoint
@@ -215,6 +323,7 @@ class Window(Gtk.Window):
 			elif self.hoverPoint != None: #else remove current point				
 				self.points.remove(self.hoverPoint)
 				self.segments = [s for s in self.segments if s.a != self.hoverPoint and s.b != self.hoverPoint]
+				self.computeAngles()
 				self.hoverPoint = None
 
 		self.darea.queue_draw()
