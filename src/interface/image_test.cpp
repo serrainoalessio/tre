@@ -2,11 +2,24 @@
  *   IMAGE TEST CODE GOES HERE
  */
 
-#include "image/image.h"
+#include "image/image.hpp"
+#include "dataset/dataset.hpp"
+
+#include "misc.hpp"
+
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+using namespace cv;
 
 int main(){
-	Image test(200,200);
+	MNIST mnist("data/train-images","data/train-labels");
 
-	imshow("test",test.toMat());
-	waitkey(0);
+	for(int i = 0;true;i++){
+		Image test(mnist.getImage(i));
+
+		imshow("test",test.toColorMat(10));
+		waitKey(0);
+	}
 }

@@ -18,7 +18,8 @@ public:
 	const unsigned int cols = 0;
 
 	Image();
-	Image(Mat& img);
+	Image(cv::Mat&& img);
+	Image(cv::Mat& img);
 	Image(int _rows,int _cols);
 
 
@@ -26,7 +27,7 @@ public:
 	float& operator() (int x,int y);
 
 	//linear interpolated get and set functions
-	float get(float x,float y) const;
+	float get(float x,float y);
 	void add(float x,float y,float v);
 
 	/*
@@ -40,6 +41,7 @@ public:
 
 	//convert the image to opencv Matrix ( actually it just wrap an opencv matrix around the data )
 	cv::Mat toMat() const;
+	cv::Mat toColorMat(int upscale = 1) const;
 
 };
 

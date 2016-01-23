@@ -18,7 +18,7 @@ file(GLOB SOURCES_POINT "${DIR_SOURCES_POINT}/*.cpp") # adds all cpp files
 add_library(point ${SOURCES_POINT}) # creates the point library
 add_executable(example src/interface/point_test.cpp)
 
-# ==========================================
+# ============================================
 
 find_package(OpenCV REQUIRED) # Required opencv for this project
 
