@@ -1,6 +1,8 @@
 #ifndef POINT_HPP
 #define POINT_HPP
 
+#include <stddef.h> // size_t type
+
 #include <array>
 #include <utility> // std::pair
 #include <algorithm>
@@ -12,26 +14,23 @@ private:
     std::array<float_type, dim> coords;
 public:
     // operators () and [] gets the coordinates of the point
-    float_type operator[](size_t id) const {return coords[id]; }
-    float_type operator()(size_t id) const {return coords[id]; }
-    float_type& operator[](size_t id) {return coords[id]; }
-    float_type& operator()(size_t id) {return coords[id]; }
-    int dimensions() {return dim; } // dimension of that point
+    const float_type& operator[](size_t id) const; // call on const members
+    const float_type& operator()(size_t id) const;
+    float_type& operator[](size_t id);
+    float_type& operator()(size_t id);
+    size_t dimensions(); // returns the number of dimension of the point
 
-    /****** N.B. For only bi-dimensional points ******/
-    float_type X() const {return this->operator[](0); }
-    float_type Y() const {return this->operator[](1); }
-    float_type& X() {return this->operator[](0); }
-    float_type& Y() {return this->operator[](1); }
-    /*************************************************/
+    // ===== N.B. For only bi-dimensional points =====
+    const float_type& X() const;
+    const float_type& Y() const;
+    float_type& X();
+    float_type& Y();
+    // ===== =================================== =====
 
     // constructors
-    point(std::initializer_list<float_type> coordinates) {
-        std::copy(coordinates.begin(), coordinates.begin() + coords.size(), coords.begin());
-    }
-    point(float_type X = 0, float_type Y = 0): coords({X, Y}) {}
-    point(const point<float_type, dim>& Pt): coords(Pt.coords) {} // copy constructor
-    ~point() {} // destructor
+    point(std::initializer_list<float_type> coordinates);
+    point(float_type X = 0, float_type Y = 0);
+    point(const point<float_type, dim>& Pt);
 
     // Comparing operators
     template <bool approx, typename float_type_aux, int dim_aux>
