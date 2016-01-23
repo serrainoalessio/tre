@@ -1,8 +1,10 @@
 #ifndef POINT_DISTANCE_HPP
 #define POINT_DISTANCE_HPP
 
-#include "point/point.hpp"
+#include "geometry/point.hpp"
 #include "geometry_approx.hpp"
+
+#include <cmath> // sqrt, pow, abs
 
 template <typename float_type, int dim>
     float_type minkowsky_distancen(const point<float_type, dim>& op1,
@@ -11,8 +13,8 @@ template <typename float_type, int dim>
     float_type temp, sum = 0;
     for (size_t i = 0; i < dim; i++) {
         temp = diffid(op1, op2, i);
-        basicmath::abs(temp, temp);
-        basicmath::power(temp, temp, n);
+        std::abs(temp, temp);
+        std::pow(temp, temp, n);
         sum += temp;
     }
     return sum;
@@ -23,7 +25,7 @@ template <typename float_type, int dim>
                                   const point<float_type, dim>& op2,  float_type n)
 {
     float_type value = minkowsky_distancen(op1, op2, n);
-    basicmath::root(value, value, n);
+    std::pow(value, value, 1/n);
     return value;
 }
 
@@ -54,7 +56,7 @@ template <typename float_type, int dim>
     float_type temp, best = 0;
     for (size_t i = 0; i < dim; i++) {
         temp = diffid(op1, op2, i);
-        basicmath::abs(temp, temp);
+        std::abs(temp, temp);
         best = (temp > best)?temp:best; // set best to the maximum
     }
     return best; // returns the maximum

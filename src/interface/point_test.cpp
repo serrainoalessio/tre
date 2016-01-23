@@ -1,5 +1,5 @@
 #include <iostream>
-#include "point.hpp"
+#include "geometry.hpp" // geometry header
 using namespace std;
 
 int main() {
