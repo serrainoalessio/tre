@@ -2,6 +2,7 @@
 #include "misc.hpp"
 #include <cassert>
 #include <iostream>
+#include <utility>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -9,7 +10,7 @@
 
 using namespace cv;
 
-//enable some safe checks lowering performances 
+//enable some safe checks lowering performances
 #define IMAGE_SAFE 1
 
 Image::Image(cv::Mat&& src):rows(src.rows),cols(src.cols){
@@ -73,6 +74,52 @@ void Image::add(float x,float y,float v){
 	(*this)( ceil(x), ceil(y)) += v*(    wx)*(    wy);
 	(*this)(floor(x), ceil(y)) += v*(1 - wx)*(    wy);
 	(*this)( ceil(x),floor(y)) += v*(    wx)*(1 - wy);
+}
+
+bool Image::compareSize(const Image& other) const{
+	return compareSize(other.rows,other.cols);
+}
+
+bool Image::compareSize(uint _rows,uint _cols) const{
+	return rows == _rows && cols == _cols;
+}
+
+std::pair<float,float> Image::getDataRange() const{
+	std::pair<float,float> res;
+	getDataRange(res.first,res.second);
+	return res;
+}
+
+void Image::getDataRange(float& min,float& max) const{
+	min = FLT_MAX;
+	max = FLT_MIN;
+
+	for(uint i = 0;i < rows*cols;++i){
+		float v = data.get()[i];
+		if(v < min)min = v;
+		if(v > max)max = v;
+	}
+}
+
+bool Image::setDataRange(float min,float max){
+	#if IMAGE_SAFE == 1
+		assert(max > min);
+	#endif
+
+	float oldMin,oldMax;
+	getDataRange(oldMin,oldMax);
+
+	#if IMAGE_SAFE == 1
+		if( (oldMax - oldMin) < 1e-30){
+			std::cout << CONSOLE_RED << "ERROR cannot set data range of image because its min (" << oldMin << ") is (almost) equal its max" << CONSOLE_RESET << endl;
+			return false;
+		}
+	#endif
+
+	float s = (max - min)/(oldMax - oldMin);
+	for(uint i = 0;i < rows*cols;++i)data.get()[i] = (data.get()[i] - oldMin)*s + min;
+
+	return true;
 }
 
 cv::Mat Image::toMat() const{

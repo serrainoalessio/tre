@@ -19,6 +19,10 @@ int main(){
 	for(int i = 0;true;i++){
 		Image test(mnist.getImage(i));
 
+		//test.setDataRange(-1,1);
+		auto minMax = test.getDataRange();
+		cout << "min: " << minMax.first << " max: " << minMax.second << endl;
+
 		imshow("test",test.toColorMat(10));
 		waitKey(0);
 	}
