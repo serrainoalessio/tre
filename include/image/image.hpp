@@ -25,6 +25,10 @@ public:
 
 	//operator to both get and set the value of a pixel (x,y)
 	float& operator() (int x,int y);
+	float& operator[] (uint i);
+
+	float operator() (int x,int y) const;
+	float operator[] (uint i) const;
 
 	//linear interpolated get and set functions
 	float get(float x,float y);
@@ -41,6 +45,10 @@ public:
 
 	//convolution filters
 	void convolve(const Image& kernel,Image& destination) const;
+
+	void gradient(Image& direction,Image& intensity) const;
+
+	void abs();
 
 	//convert the image to opencv Matrix ( actually it just wrap an opencv matrix around the data )
 	cv::Mat toMat() const;

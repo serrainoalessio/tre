@@ -46,7 +46,7 @@ Image::Image(int _rows,int _cols,initializer_list<float> _data):rows(_rows),cols
 		assert(_data.size() == rows*cols);
 	#endif
 
-	std::copy(_data.begin(), _data.end(), data);
+	std::copy(_data.begin(), _data.end(), data.get());
 }
 
 void Image::allocate(){
@@ -61,6 +61,23 @@ float& Image::operator() (int x,int y){
 	#endif
 
 	return data.get()[y*cols+x];
+}
+
+float& Image::operator[] (uint i){
+	return data.get()[i];
+}
+
+float Image::operator() (int x,int y) const{
+	#if IMAGE_SAFE == 1
+		x = keepInRange<uint>(x,0,cols-1);
+		y = keepInRange<uint>(y,0,rows-1);
+	#endif
+
+	return data.get()[y*cols+x];
+}
+
+float Image::operator[] (uint i) const{
+	return data.get()[i];
 }
 
 float Image::get(float x,float y){
@@ -121,7 +138,7 @@ bool Image::setDataRange(float min,float max){
 
 	#if IMAGE_SAFE == 1
 		if( (oldMax - oldMin) < 1e-30){
-			std::cout << CONSOLE_RED << "ERROR cannot set data range of image because its min (" << oldMin << ") is (almost) equal its max" << CONSOLE_RESET << endl;
+			std::cout << CONSOLE_RED << "ERROR cannot set data range of image because its min (" << oldMin << ") is (almost) equal its max (" << oldMax << ")" << CONSOLE_RESET << endl;
 			return false;
 		}
 	#endif
@@ -136,17 +153,51 @@ bool Image::setDataRange(float min,float max){
 void Image::convolve(const Image& kernel,Image& destination) const{
 	#if IMAGE_SAFE == 1
 		assert(hasSize(destination));
+		assert(kernel.rows%2 == 1);
+		assert(kernel.cols%2 == 1);
 	#endif
 
 	int ox = kernel.cols/2;
 	int oy = kernel.rows/2;
 
 	#if IMAGE_SAFE == 1
-	for(uint j = 0;j < rows;++j)for(uint i = 0;i < cols;++i){
-	#else
-	for(uint j = 0;j < rows;++j)for(uint i = 0;i < cols;++i){
-
+		for(uint j = 0;j < rows;++j)for(uint i = 0;i < cols;++i)
+	#else //if not image safe doesn't compute the gradient for outes pixels ( getting a pixel out of bound is "undefined behaviour" )
+		for(uint j = oy;j < rows-oy;++j)for(uint i = ox;i < cols-ox;++i)
+	#endif
+	{
+		destination(i,j) = 0;
+		for(int y = -oy;y <= oy;++y)for(int x = -ox;x <= ox;++x){
+			destination(i,j) += (*this)(i+x,j+y) * kernel(x+ox,y+oy);
+		}
 	}
+}
+
+void Image::gradient(Image& direction,Image& intensity) const{
+	#if IMAGE_SAFE == 1
+		assert(hasSize(direction));
+		assert(hasSize(intensity));
+	#endif
+
+	Image kernelX(1,3,{-1,0,1});
+	Image kernelY(3,1,{-1,0,1});
+
+	convolve(kernelX,direction);
+	convolve(kernelY,intensity);
+
+	//TODO: implement this with avx
+	for(uint i = 0;i < rows*cols;++i){
+		float dx = direction[i];
+		float dy = intensity[i];
+
+		direction[i] = atan2(dy,dx);
+		intensity[i] = dx*dx + dy*dy;
+	}
+}
+
+// TODO: implement this with avx
+void Image::abs() {
+	for(uint i = 0;i < rows*cols;++i)data.get()[i] = fabs(data.get()[i]);
 }
 
 cv::Mat Image::toMat() const{
