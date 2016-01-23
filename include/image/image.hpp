@@ -18,6 +18,7 @@ public:
 	const unsigned int cols = 0;
 
 	Image();
+	Image(cv::Mat&& img);
 	Image(cv::Mat& img);
 	Image(int _rows,int _cols);
 
@@ -40,6 +41,7 @@ public:
 
 	//convert the image to opencv Matrix ( actually it just wrap an opencv matrix around the data )
 	cv::Mat toMat() const;
+	cv::Mat toColorMat(int upscale = 1) const;
 
 };
 

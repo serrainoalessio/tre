@@ -18,17 +18,26 @@ include_directories(include/) # all includes are here
 #add_library(point "${SOURCES_POINT}") # creates the point library
 #add_executable(example src/interface/point_test.cpp)
 
-# ==========================================
+# ============================================
 
-# IMAGE
 find_package(OpenCV REQUIRED) # Required opencv for this project
 
+# ============== IMAGE LIBRARY ===============
 set(DIR_SOURCES_IMAGE "src/image")
 file(GLOB SOURCES_IMAGE ${DIR_SOURCES_IMAGE}/*.cpp)
 add_library(image ${SOURCES_IMAGE})
 target_link_libraries(image ${OpenCV_LIBS}) # link against OpenCV libs
+# ============================================
+
+# ============= DATASET LIBRARY ==============
+set(DIR_SOURCES_DATASET "src/dataset")
+file(GLOB SOURCES_DATASET ${DIR_SOURCES_DATASET}/*.cpp)
+add_library(dataset ${SOURCES_DATASET})
+target_link_libraries(dataset ${OpenCV_LIBS}) # link against OpenCV libs
+# ============================================
+
 add_executable(image_test src/interface/image_test.cpp) # Compiles the executable
-target_link_libraries(image_test image) # Links the image library
-# ==========================================
+target_link_libraries(image_test image dataset)
+
 
 # add_executable(example src/interface/example.cpp)

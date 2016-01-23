@@ -1,15 +1,33 @@
 #include "image/image.hpp"
 #include "misc.hpp"
 #include <cassert>
+#include <iostream>
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+
+using namespace cv;
 
 //enable some safe checks lowering performances 
 #define IMAGE_SAFE 1
+
+Image::Image(cv::Mat&& src):rows(src.rows),cols(src.cols){
+	this->allocate();
+
+	//8-bit single channel image ( uchar in range 0-255)
+	assert(src.type() == CV_8UC1);
+
+	//copy and map range of the data
+	float* ptr = this->data.get();
+	for(uint i = 0;i < cols*rows;i++)ptr[i] = float(src.data[i])/255.0f;
+}
 
 Image::Image(cv::Mat& src):rows(src.rows),cols(src.cols){
 	this->allocate();
 
 	//8-bit single channel image ( uchar in range 0-255)
-	assert(src.depth() == 8 && src.channels() == 1);
+	assert(src.type() == CV_8UC1);
 
 	//copy and map range of the data
 	float* ptr = this->data.get();
@@ -59,4 +77,22 @@ void Image::add(float x,float y,float v){
 
 cv::Mat Image::toMat() const{
 	return cv::Mat(rows, cols,CV_32FC1,data.get());
+}
+
+cv::Mat Image::toColorMat(int upscale) const{
+	Mat res(rows,cols,CV_8UC3);
+
+	for(uint j = 0; j < rows; ++j)for(uint i = 0;i < cols; ++i){
+		res.data[(j*cols+i)*3 + 0] = (uchar)(data.get()[j*cols+i]*255.0f);
+		res.data[(j*cols+i)*3 + 1] = (uchar)(data.get()[j*cols+i]*255.0f);
+		res.data[(j*cols+i)*3 + 2] = (uchar)(data.get()[j*cols+i]*255.0f);
+	}
+
+	if(upscale > 1){
+		Mat big;
+		resize(res,big,Size(),upscale,upscale,INTER_NEAREST);
+		return big;
+	}
+
+	return res;
 }
