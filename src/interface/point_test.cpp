@@ -9,7 +9,7 @@ int main() {
    Point2DCentroid centroid;
 
    for(int i = 0;i < 100;i++){
-      centroid.add(Point2D(randRange(-1.0f,1.0f),randRange(-1.0f,1.0f)));
+      centroid.add(Point2D(randRange(0.0f,1.0f),randRange(-1.0f,1.0f)));
    }
 
    auto center = centroid.get();

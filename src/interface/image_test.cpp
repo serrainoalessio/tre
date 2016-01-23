@@ -19,7 +19,16 @@ int main(){
 	for(int i = 0;true;i++){
 		Image test(mnist.getImage(i));
 
-		imshow("test",test.toColorMat(10));
+		Image direction(test.rows,test.cols);
+		Image intensity(test.rows,test.cols);
+
+		test.gradient(direction,intensity);
+		intensity.setDataRange(0,1);
+
+		imshow("test",test.toColorMat(3));
+		imshow("borders",intensity.toColorMat(3));
+
+
 		waitKey(0);
 	}
 }
