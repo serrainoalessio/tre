@@ -39,6 +39,16 @@ Image::Image(int _rows,int _cols):rows(_rows),cols(_cols){
 	this->allocate();
 }
 
+Image::Image(int _rows,int _cols,initializer_list<float> _data):rows(_rows),cols(_cols){
+	this->allocate();
+
+	#if IMAGE_SAFE == 1
+		assert(_data.size() == rows*cols);
+	#endif
+
+	std::copy(_data.begin(), _data.end(), data);
+}
+
 void Image::allocate(){
 	//allocate the image data 32-bit aligned to enable fast avx functions
 	data.reset((float*)aligned_alloc(32, rows * cols * sizeof(float)));
@@ -76,11 +86,11 @@ void Image::add(float x,float y,float v){
 	(*this)( ceil(x),floor(y)) += v*(    wx)*(1 - wy);
 }
 
-bool Image::compareSize(const Image& other) const{
-	return compareSize(other.rows,other.cols);
+bool Image::hasSize(const Image& other) const{
+	return hasSize(other.rows,other.cols);
 }
 
-bool Image::compareSize(uint _rows,uint _cols) const{
+bool Image::hasSize(uint _rows,uint _cols) const{
 	return rows == _rows && cols == _cols;
 }
 
@@ -120,6 +130,23 @@ bool Image::setDataRange(float min,float max){
 	for(uint i = 0;i < rows*cols;++i)data.get()[i] = (data.get()[i] - oldMin)*s + min;
 
 	return true;
+}
+
+// TODO: implement this with avx
+void Image::convolve(const Image& kernel,Image& destination) const{
+	#if IMAGE_SAFE == 1
+		assert(hasSize(destination));
+	#endif
+
+	int ox = kernel.cols/2;
+	int oy = kernel.rows/2;
+
+	#if IMAGE_SAFE == 1
+	for(uint j = 0;j < rows;++j)for(uint i = 0;i < cols;++i){
+	#else
+	for(uint j = 0;j < rows;++j)for(uint i = 0;i < cols;++i){
+
+	}
 }
 
 cv::Mat Image::toMat() const{
