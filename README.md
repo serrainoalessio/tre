@@ -1,11 +1,19 @@
-# tre
+# TRE
 Shape matching for character recognition
 
-# compiling
-Make sure you have installed cmake, make and g++ (build-essentials)
+# Dependencies
+* opencv 3
+* python
+* g++ 4.9
+* cmake 3
+* ...
 
-1. Open a terminal in the root of this project
-
-2. cmake .
-
-3. make all
+# Installation
+After getting all the dependencies
+```
+git clone https://github.com/serrainoalessio/tre.git
+cd tre
+./get-mnist.sh
+cmake .
+make
+```
