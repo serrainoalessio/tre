@@ -1,0 +1,3 @@
+class point_centroid() {
+    
+}
