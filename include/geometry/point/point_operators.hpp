@@ -115,7 +115,7 @@ template <typename float_type, int dim>
 template <class operation, typename float_type, int dim> point<float_type, dim>
     plus_minus_helper(const point<float_type, dim>& op1, const point<float_type, dim>& op2)
     {
-        static_assert(std::is_same<decltype(op1.coords), std::array<float_type, dim>>::value,
+        static_assert(std::is_same< decltype(op1.coords), std::array<float_type, dim> >::value,
                       "You must use points with the same number of dimension to perform this operation");
 
         point<float_type, dim> result;
@@ -123,25 +123,30 @@ template <class operation, typename float_type, int dim> point<float_type, dim>
         return result;
     }
 
+
+template <class operation, typename float_type, int dim> point<float_type, dim>
+    dot_product_helper(point<float_type, dim> const& op1, float_type& op2);
+
 template <typename float_type, int dim>
     point<float_type, dim> operator*(point<float_type, dim> const& op1, float_type& op2)
     {
-        point<float_type, dim> result;
-        
-        return result;
+        return dot_product_helper< std::multiplies<float_type> > (op1, op2);
     }
 template <typename float_type, int dim>
     point<float_type, dim> operator/(point<float_type, dim> const& op1, float_type& op2)
     {
-        point<float_type, dim> result;
-        // create correct operation
-        return result;
+        return dot_product_helper< std::divides<float_type> > (op1, op2);
     }
 
 template <class operation, typename float_type, int dim> point<float_type, dim>
     dot_product_helper(point<float_type, dim> const& op1, float_type& op2) {
+        static_assert(std::is_same< decltype(op1.coords), std::array<float_type, dim> >::value,
+                      "You must use points with the same number of dimension to perform this operation");
+
+        operation exec;
         point<float_type, dim> result;
-        std::transform(op1.coords.begin(), op1.coords.end(), op1.coords.begin(), result.coords.begin(), operation() );
+        std::transform(op1.coords.begin(), op1.coords.end(), result.coords.begin(),
+                        [op2, &exec](const float_type& op1) -> float_type { return exec(op1, op2); });
         return result;
     }
 #endif // POINT_OPERATORS_HPP
