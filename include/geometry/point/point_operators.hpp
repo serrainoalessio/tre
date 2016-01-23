@@ -124,7 +124,7 @@ template <class operation, typename float_type, int dim> point<float_type, dim>
     }
 
 template <typename float_type, int dim>
-    point<float_type, dim> operator*(const point<float_type, dim>& op1, float_type& op2)
+    point<float_type, dim> operator*(point<float_type, dim> const& op1, float_type& op2)
     {
         point<float_type, dim> result;
         std::transform(op1.coords.begin(), op1.coords.end(), op1.coords.begin(), result.coords.begin(),
@@ -132,7 +132,7 @@ template <typename float_type, int dim>
         return result;
     }
 template <typename float_type, int dim>
-    point<float_type, dim> operator/(const point<float_type, dim>& op1, float_type& op2)
+    point<float_type, dim> operator/(point<float_type, dim> const& op1, float_type& op2)
     {
         point<float_type, dim> result;
         std::transform(op1.coords.begin(), op1.coords.end(), op1.coords.begin(), result.coords.begin(),

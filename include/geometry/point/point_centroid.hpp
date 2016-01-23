@@ -1,3 +1,4 @@
+#include "geometry/point.hpp"
 #include "geometry/centroid.hpp"
 #include "geometry_approx.hpp"
 #include <algorithm>
@@ -24,10 +25,10 @@ template <typename float_type, int dim>
 
 template <typename float_type, int dim>
     point<float_type, dim> centroid(std::initializer_list< const point<float_type, dim> > pts) {
-
+        // TODO: this funcition
     }
 
 template <typename float_type, int dim>
     point<float_type, dim> centroid_weight(std::initializer_list< std::pair< const point<float_type, dim>, int > >) {
-
+        // TODO: this function
     }
