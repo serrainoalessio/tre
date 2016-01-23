@@ -101,13 +101,13 @@ template <class operation, typename float_type, int dim> point<float_type, dim>
     plus_minus_helper(const point<float_type, dim>& op1, const point<float_type, dim>& op2);
 
 template <typename float_type, int dim>
-    point<float_type, dim> operator+(const point<float_type, dim>& op1, const point<float_type, dim>& op2)
+    point<float_type, dim> operator+(point<float_type, dim> const& op1, point<float_type, dim> const& op2)
     {
         return plus_minus_helper< std::plus<float_type> >(op1, op2);
     }
 
 template <typename float_type, int dim>
-    point<float_type, dim> operator-(const point<float_type, dim>& op1, const point<float_type, dim>& op2)
+    point<float_type, dim> operator-(point<float_type, dim> const& op1, point<float_type, dim> const& op2)
     {
         return plus_minus_helper< std::minus<float_type> >(op1, op2);
     }
@@ -127,17 +127,21 @@ template <typename float_type, int dim>
     point<float_type, dim> operator*(point<float_type, dim> const& op1, float_type& op2)
     {
         point<float_type, dim> result;
-        std::transform(op1.coords.begin(), op1.coords.end(), op1.coords.begin(), result.coords.begin(),
-                       [op2](decltype(*op1.coords.data()) op1_id ) { return op1_id*op2; } );
+        
         return result;
     }
 template <typename float_type, int dim>
     point<float_type, dim> operator/(point<float_type, dim> const& op1, float_type& op2)
     {
         point<float_type, dim> result;
-        std::transform(op1.coords.begin(), op1.coords.end(), op1.coords.begin(), result.coords.begin(),
-                       [op2](decltype(*op1.coords.data()) op1_id ) { return op1_id/op2; } );
+        // create correct operation
         return result;
     }
 
+template <class operation, typename float_type, int dim> point<float_type, dim>
+    dot_product_helper(point<float_type, dim> const& op1, float_type& op2) {
+        point<float_type, dim> result;
+        std::transform(op1.coords.begin(), op1.coords.end(), op1.coords.begin(), result.coords.begin(), operation() );
+        return result;
+    }
 #endif // POINT_OPERATORS_HPP

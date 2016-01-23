@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "geometry.hpp" // geometry header
 #include "misc.hpp"
@@ -15,10 +14,10 @@ int main() {
 
    auto center = centroid.get();
    cout << center[0] << " " << center[1] << endl;
-    /*
-    point2d_t A(3, 5), B(1, 7), C;
+/*
+    Point2D A(3, 5), B(1, 7), C;
     C = A + B; // points are vector
     cout << C.X() << " " << C.Y() << endl;
-    */
+*/
     return 0;
 }

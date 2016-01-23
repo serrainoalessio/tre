@@ -42,6 +42,9 @@ public:
     template <class operation_aux, typename float_type_aux, int dim_aux> friend
         point<float_type_aux, dim_aux> plus_minus_helper(const point<float_type_aux, dim_aux>& op1,
                                                          const point<float_type_aux, dim_aux>& op2);
+
+    template <class operation_aux, typename float_type_aux, int dim_aux> friend
+        point<float_type_aux, dim_aux> dot_product_helper(point<float_type_aux, dim_aux> const& op1, float_type_aux& op2);
 };
 
 /*                                                      *
@@ -84,9 +87,9 @@ template <bool approx = true, typename float_type, int dim>
 
 /* === THIS MAY BE USEFUL WHEN TREATING POINTS AS VECTORS === */
 template <typename float_type, int dim>
-    point<float_type, dim> operator-(const point<float_type, dim>& op1, const point<float_type, dim>& op2);
+    point<float_type, dim> operator-(point<float_type, dim> const& op1, point<float_type, dim> const& op2);
 template <typename float_type, int dim>
-    point<float_type, dim> operator+(const point<float_type, dim>& op1, const point<float_type, dim>& op2);
+    point<float_type, dim> operator+(point<float_type, dim> const& op1, point<float_type, dim> const& op2);
 template <typename float_type, int dim>
     point<float_type, dim> operator*(point<float_type, dim> const& op1, float_type& op2);
 template <typename float_type, int dim>
