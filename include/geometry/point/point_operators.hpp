@@ -102,25 +102,42 @@ template <class operation, typename float_type, int dim> point<float_type, dim>
 
 template <typename float_type, int dim>
     point<float_type, dim> operator+(const point<float_type, dim>& op1, const point<float_type, dim>& op2)
-{
-    return plus_minus_helper< std::plus<float_type> >(op1, op2);
-}
+    {
+        return plus_minus_helper< std::plus<float_type> >(op1, op2);
+    }
 
 template <typename float_type, int dim>
     point<float_type, dim> operator-(const point<float_type, dim>& op1, const point<float_type, dim>& op2)
-{
-    return plus_minus_helper< std::minus<float_type> >(op1, op2);
-}
+    {
+        return plus_minus_helper< std::minus<float_type> >(op1, op2);
+    }
 
 template <class operation, typename float_type, int dim> point<float_type, dim>
     plus_minus_helper(const point<float_type, dim>& op1, const point<float_type, dim>& op2)
-{
-    static_assert(std::is_same<decltype(op1.coords), std::array<float_type, dim>>::value,
-                  "You must use points with the same number of dimension to perform this operation");
+    {
+        static_assert(std::is_same<decltype(op1.coords), std::array<float_type, dim>>::value,
+                      "You must use points with the same number of dimension to perform this operation");
 
-    point<float_type, dim> result;
-    std::transform(op1.coords.begin(), op1.coords.end(), op2.coords.begin(), result.coords.begin(), operation());
-    return result;
-}
+        point<float_type, dim> result;
+        std::transform(op1.coords.begin(), op1.coords.end(), op2.coords.begin(), result.coords.begin(), operation());
+        return result;
+    }
+
+template <typename float_type, int dim>
+    point<float_type, dim> operator*(const point<float_type, dim>& op1, float_type& op2)
+    {
+        point<float_type, dim> result;
+        std::transform(op1.coords.begin(), op1.coords.end(), op1.coords.begin(), result.coords.begin(),
+                       [op2](decltype(*op1.coords.data()) op1_id ) { return op1_id*op2; } );
+        return result;
+    }
+template <typename float_type, int dim>
+    point<float_type, dim> operator/(const point<float_type, dim>& op1, float_type& op2)
+    {
+        point<float_type, dim> result;
+        std::transform(op1.coords.begin(), op1.coords.end(), op1.coords.begin(), result.coords.begin(),
+                       [op2](decltype(*op1.coords.data()) op1_id ) { return op1_id/op2; } );
+        return result;
+    }
 
 #endif // POINT_OPERATORS_HPP

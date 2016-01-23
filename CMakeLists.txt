@@ -15,7 +15,7 @@ include_directories(include/) # all includes are here
 # POINT
 set(DIR_SOURCES_POINT "src/point")
 file(GLOB SOURCES_POINT "${DIR_SOURCES_POINT}/*.cpp") # adds all cpp files
-add_library(point "${SOURCES_POINT}") # creates the point library
+add_library(point ${SOURCES_POINT}) # creates the point library
 add_executable(example src/interface/point_test.cpp)
 
 # ==========================================

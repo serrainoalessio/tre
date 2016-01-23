@@ -87,15 +87,15 @@ template <typename float_type, int dim>
     point<float_type, dim> operator-(const point<float_type, dim>& op1, const point<float_type, dim>& op2);
 template <typename float_type, int dim>
     point<float_type, dim> operator+(const point<float_type, dim>& op1, const point<float_type, dim>& op2);
+template <typename float_type, int dim>
+    point<float_type, dim> operator*(const point<float_type, dim>& op1, float_type& op2);
+template <typename float_type, int dim>
+    point<float_type, dim> operator/(const point<float_type, dim>& op1, float_type& op2);
 
 /* === UTILITIES === */
 template <typename float_type, int dim>
     bool aligned(const point<float_type, dim>& op1, const point<float_type, dim>& op2, const point<float_type, dim>& op3);
 template <typename float_type, int dim>
     bool aligned(std::initializer_list< const point<float_type, dim> > pts);
-template <typename float_type, int dim>
-    bool centroid(std::initializer_list< const point<float_type, dim> > pts);
-template <typename float_type, int dim>
-    bool centroid_weight(std::initializer_list< std::pair< const point<float_type, dim>, int > >);
 
 #endif // POINT_HPP defined
