@@ -52,7 +52,7 @@ public:
 	void abs();
 
 	Point2D centroid() const;
-	float direction(Point2D& center) const;
+	float direction(Point2D& center,float& alpha,float& beta) const;
 
 	//convert the image to opencv Matrix ( actually it just wrap an opencv matrix around the data )
 	cv::Mat toMat() const;

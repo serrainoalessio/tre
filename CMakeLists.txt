@@ -27,7 +27,7 @@ find_package(OpenCV REQUIRED) # Required opencv for this project
 set(DIR_SOURCES_IMAGE "src/image")
 file(GLOB SOURCES_IMAGE ${DIR_SOURCES_IMAGE}/*.cpp)
 add_library(image ${SOURCES_IMAGE})
-target_link_libraries(image ${OpenCV_LIBS}) # link against OpenCV libs
+target_link_libraries(image ${OpenCV_LIBS} point) # link against OpenCV libs
 # ============================================
 
 # ============= DATASET LIBRARY ==============

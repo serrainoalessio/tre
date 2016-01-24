@@ -211,19 +211,104 @@ Point2D Image::centroid() const{
 	return centroid.get();
 }
 
+class AngleAverage{
+public:
+	float A,W;
+
+	AngleAverage(){
+		A = 0;
+		W = 0;
+	}
+
+	void add(float a,float w){
+		if(w == 0)return;
+
+		if(a - A > M_PI/2)a -= M_PI;
+		else if(A - a > M_PI/2)A -= M_PI;
+		A = (W*A+w*a)/(W+w);
+
+		if(A < 0)A += M_PI;
+
+		W += w;
+	}
+
+	float getAverage(){
+		return A;
+	}
+
+	float getWeight(){
+		return W;
+	}
+};
+
+
+float signed_sqrt(float x){
+	if(x < 0){
+		return -sqrt(-x);
+	}else{
+		return sqrt(x);
+	}
+}
+
 // TODO: implement this with avx
-// TODO: optimize atan2
-float Image::direction(Point2D& center) const{
-	float dir = 0;
-	float totalW = 0;
+float Image::direction(Point2D& center,float& alpha,float& beta) const{
+	float a = 0;
+	float b = 0;
+	float c = 0;
 
 	for(uint j = 0; j < rows; ++j)for(uint i = 0;i < cols; ++i){
 		float w = this->operator()(i,j);
-		totalW += w;
-		dir += atan2(fabs(j-center[1]),i-center[0])*w;
+		if(w > 0){
+			a += (i-center[0])*(i-center[0]);
+			b += (i-center[0])*(j-center[1]);
+			c += (j-center[1])*(j-center[1]);
+		}
 	}
 
-	return dir/totalW;
+	float nv = sqrt(c*c + b*b);
+	float no = sqrt(a*a + b*b);
+
+	Point2D Y(b/nv,c/nv);
+	Point2D X(a/no,b/no);
+
+
+	float k = signed_sqrt(Y[0]*X[0] + Y[1]*X[1]);
+	//cout << "K: " << k << endl;
+
+	beta = atan2(Y[1],Y[0]); // vertical component ( the most important)
+	if(beta < 0)beta = M_PI + beta;
+
+	alpha = atan2(X[1] -k*Y[1],X[0] -k*Y[0]);
+	if(alpha < 0)alpha = M_PI + alpha;
+
+/*
+	float dist = fabs(alpha - beta);
+	if(dist > M_PI/2){
+
+	} dist = M_PI - dist;
+
+	if(dist < M_PI/2){
+		cout << "small" << endl;
+	}
+*/
+
+	cout << a << " " << b << " " << c << endl;
+	cout << (c*c+b*b)/(b*b+a*a) << endl;
+
+	//if(beta-alpha > M_PI/2)alpha += M_PI/2;
+
+
+	//alpha = atan2(2*b*(a+c),a*a+c*c)/2 + M_PI/2;
+
+
+	AngleAverage avg;
+
+	for(uint j = 0; j < rows; ++j)for(uint i = 0;i < cols; ++i){
+		float w = this->operator()(i,j);
+		avg.add(atan2(j-center[1],i-center[0]),w);
+	}
+
+	return avg.getAverage();
 }
 
 cv::Mat Image::toMat() const{
