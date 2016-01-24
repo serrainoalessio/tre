@@ -82,8 +82,8 @@ template <typename float_type, int dim>
                   "You must use points with the same number of dimension to perform this operation"); // checks data consistence
     return std::mismatch(op1.coords.begin(), op1.coords.end(), op2.coords.begin(),
                         [](const auto it1, const auto it2) -> bool {
-                            return eq(*it1, *it2);
-                        } ).first() == op1.coords.end();
+                            return EQ(*it1, *it2);
+                        } ).first() == op1.coords.end(); // first mismatch at end
 }
 
 template <typename float_type, int dim>
@@ -93,8 +93,8 @@ template <typename float_type, int dim>
                   "You must use points with the same number of dimension to perform this operation");// checks data consistence
   return std::mismatch(op1.coords.begin(), op1.coords.end(), op2.coords.begin(),
                       [](const auto it1, const auto it2) -> bool {
-                          return eq(*it1, *it2);
-                      } ).first() != op1.coords.end();
+                          return EQ(*it1, *it2);
+                      } ).first() != op1.coords.end(); // first mistmatch not at the end
 }
 
 template <class operation, typename float_type, int dim> point<float_type, dim>
@@ -110,6 +110,15 @@ template <typename float_type, int dim>
     point<float_type, dim> operator-(point<float_type, dim> const& op1, point<float_type, dim> const& op2)
     {
         return plus_minus_helper< std::minus<float_type> >(op1, op2);
+    }
+
+template <typename float_type, int dim>
+    point<float_type, dim> operator-=(point<float_type, dim>& op1, point<float_type, dim> const& op2) {
+        return op1 = op1 + op2;
+    }
+template <typename float_type, int dim>
+    point<float_type, dim> operator+=(point<float_type, dim>& op1, point<float_type, dim> const& op2) {
+        return op1 = op1 - op2;
     }
 
 template <class operation, typename float_type, int dim> point<float_type, dim>
@@ -136,6 +145,15 @@ template <typename float_type, int dim>
     point<float_type, dim> operator/(point<float_type, dim> const& op1, float_type& op2)
     {
         return dot_product_helper< std::divides<float_type> > (op1, op2);
+    }
+
+template <typename float_type, int dim>
+    point<float_type, dim> operator*=(point<float_type, dim>& op1, float_type& op2) {
+        return op1 = op1 * op2;
+    }
+template <typename float_type, int dim>
+    point<float_type, dim> operator/=(point<float_type, dim>& op1, float_type& op2) {
+        return op1 = op1 / op2;
     }
 
 template <class operation, typename float_type, int dim> point<float_type, dim>

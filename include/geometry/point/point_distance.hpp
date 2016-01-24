@@ -25,7 +25,7 @@ template <typename float_type, int dim>
                                   const point<float_type, dim>& op2,  float_type n)
 {
     float_type value = minkowsky_distancen(op1, op2, n);
-    std::pow(value, value, 1/n);
+    std::pow(value, value, 1.0/n);
     return value;
 }
 
