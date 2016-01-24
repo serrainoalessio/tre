@@ -3,6 +3,7 @@ project(tre) # Name of the project
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14") # C++14 mode
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic") # Enambles all warnings
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always") # Color output
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY lib/)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY lib/)

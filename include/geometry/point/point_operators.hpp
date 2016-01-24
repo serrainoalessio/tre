@@ -114,11 +114,11 @@ template <typename float_type, int dim>
 
 template <typename float_type, int dim>
     point<float_type, dim> operator-=(point<float_type, dim>& op1, point<float_type, dim> const& op2) {
-        return op1 = op1 + op2;
+        return op1 = op1 - op2;
     }
 template <typename float_type, int dim>
     point<float_type, dim> operator+=(point<float_type, dim>& op1, point<float_type, dim> const& op2) {
-        return op1 = op1 - op2;
+        return op1 = op1 + op2;
     }
 
 template <class operation, typename float_type, int dim> point<float_type, dim>

@@ -12,13 +12,13 @@ class point_centroid {
 public:
     point_centroid();
 
-    point_centroid& add(point<float_type, dim> pt, float weight = 1);
+    point_centroid& add(const point<float_type, dim>& pt, float weight = 1);
     point<float_type, dim> get();
 };
 
 template <typename float_type, int dim>
     point<float_type, dim> centroid(std::initializer_list< const point<float_type, dim> > pts);
 template <typename float_type, int dim>
-    point<float_type, dim> centroid_weight(std::initializer_list< std::pair< const point<float_type, dim>, int > >);
+    point<float_type, dim> centroid_weight(std::initializer_list< std::pair< const point<float_type, dim>, int > > pts);
 
 #endif // CENTROID_HPP defined
