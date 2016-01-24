@@ -8,9 +8,9 @@ int main() {
     Point2D temp;
     Point2DCentroid centroid;
 
-    for(int i = 0;i < 100;i++){
+    for(int i = 0; i < 1; i++){
         temp = Point2D(randRange(0.0f, 1.0f), randRange(-1.0f, 1.0f));
-        // cout << temp.X() << " " << temp.Y() << endl;
+        cout << temp.X() << " " << temp.Y() << endl;
         centroid.add(temp);
     }
 
