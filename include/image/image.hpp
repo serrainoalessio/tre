@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <opencv2/core/core.hpp>
+#include "geometry.hpp"
 
 using namespace std;
 
@@ -49,6 +50,9 @@ public:
 	void gradient(Image& direction,Image& intensity) const;
 
 	void abs();
+
+	Point2D centroid() const;
+	float direction(Point2D& center) const;
 
 	//convert the image to opencv Matrix ( actually it just wrap an opencv matrix around the data )
 	cv::Mat toMat() const;

@@ -200,6 +200,32 @@ void Image::abs() {
 	for(uint i = 0;i < rows*cols;++i)data.get()[i] = fabs(data.get()[i]);
 }
 
+// TODO: implement this with avx
+Point2D Image::centroid() const{
+	Point2DCentroid centroid;
+
+	for(uint j = 0; j < rows; ++j)for(uint i = 0;i < cols; ++i){
+		centroid.add(Point2D(i,j),this->operator()(i,j));
+	}
+
+	return centroid.get();
+}
+
+// TODO: implement this with avx
+// TODO: optimize atan2
+float Image::direction(Point2D& center) const{
+	float dir = 0;
+	float totalW = 0;
+
+	for(uint j = 0; j < rows; ++j)for(uint i = 0;i < cols; ++i){
+		float w = this->operator()(i,j);
+		totalW += w;
+		dir += atan2(fabs(j-center[1]),i-center[0])*w;
+	}
+
+	return dir/totalW;
+}
+
 cv::Mat Image::toMat() const{
 	return cv::Mat(rows, cols,CV_32FC1,data.get());
 }
