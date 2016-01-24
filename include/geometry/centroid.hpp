@@ -12,7 +12,7 @@ class point_centroid {
 public:
     point_centroid();
 
-    point_centroid& add(point<float_type, dim>, float weight = 1);
+    point_centroid& add(point<float_type, dim> pt, float weight = 1);
     point<float_type, dim> get();
 };
 

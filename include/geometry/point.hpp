@@ -91,9 +91,17 @@ template <typename float_type, int dim>
 template <typename float_type, int dim>
     point<float_type, dim> operator+(point<float_type, dim> const& op1, point<float_type, dim> const& op2);
 template <typename float_type, int dim>
+    point<float_type, dim> operator-=(point<float_type, dim>& op1, point<float_type, dim> const& op2);
+template <typename float_type, int dim>
+    point<float_type, dim> operator+=(point<float_type, dim>& op1, point<float_type, dim> const& op2);
+template <typename float_type, int dim>
     point<float_type, dim> operator*(point<float_type, dim> const& op1, float_type& op2);
 template <typename float_type, int dim>
     point<float_type, dim> operator/(point<float_type, dim> const& op1, float_type& op2);
+template <typename float_type, int dim>
+    point<float_type, dim> operator*=(point<float_type, dim>& op1, float_type& op2);
+template <typename float_type, int dim>
+    point<float_type, dim> operator/=(point<float_type, dim>& op1, float_type& op2);
 
 /* === UTILITIES === */
 template <typename float_type, int dim>

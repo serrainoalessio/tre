@@ -12,7 +12,11 @@ template class point<float, 2>; // explicit template instantiation
 // instantiation of all the functions
 template point<float, 2> operator-(point<float, 2> const& op1, point<float, 2> const& op2);
 template point<float, 2> operator+(point<float, 2> const& op1, point<float, 2> const& op2);
+template point<float, 2> operator-=(point<float, 2>& op1, point<float, 2> const& op2);
+template point<float, 2> operator+=(point<float, 2>& op1, point<float, 2> const& op2);
 template point<float, 2> operator*(point<float, 2> const& op1, float& op2);
 template point<float, 2> operator/(point<float, 2> const& op1, float& op2);
+template point<float, 2> operator*=(point<float, 2>& op1, float& op2);
+template point<float, 2> operator/=(point<float, 2>& op1, float& op2);
 
 // VERY IMPORTANT TODO: instantiate all other functions

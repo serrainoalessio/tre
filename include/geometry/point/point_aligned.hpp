@@ -17,14 +17,14 @@ template <typename float_type, int dim>
     for (size_t i = 0; i < dim; i++) {
         tmp = diffid(op1, op3, i);
         tmp2 =  diffid(op1, op2, i);
-        if (tmp == (float_type)0.0) {
-            if (tmp2 == (float_type)0.0)
+        if (EQ(tmp, (float_type)0.0)) {
+            if (EQ(tmp2, (float_type)0.0))
                 continue; // good data up to now
             else
                 return false;
         }
         id_ratio = tmp2/tmp;
-        if (valcmp_nequals(id_ratio, lratio))
+        if (NEQ(id_ratio, lratio))
             return false;
     }
     return true;

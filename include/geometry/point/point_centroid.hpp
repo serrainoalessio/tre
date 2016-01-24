@@ -1,7 +1,7 @@
 #include "geometry/point.hpp"
 #include "geometry/centroid.hpp"
 #include "geometry_approx.hpp"
-#include <algorithm>
+#include <algorithm> // std::for_each
 
 template <typename float_type, int dim>
     point_centroid<float_type, dim>::point_centroid() : total_weight(0) {
@@ -9,8 +9,8 @@ template <typename float_type, int dim>
     }
 
 template <typename float_type, int dim>
-    point_centroid<float_type, dim>& point_centroid<float_type, dim>::add(point<float_type, dim>, float weight) {
-        sum = sum + sum * weight; // += not defined (till now)
+    point_centroid<float_type, dim>& point_centroid<float_type, dim>::add(point<float_type, dim> pt, float weight) {
+        sum += (pt * weight);
         total_weight += weight;
         return *this;
     }
