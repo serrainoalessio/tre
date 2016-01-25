@@ -149,6 +149,27 @@ bool Image::setDataRange(float min,float max){
 	return true;
 }
 
+float Image::norm() const{
+	float n = 0;
+	for(uint i = 0;i < rows*cols;++i) n += data.get()[i];
+	return n;
+}
+
+bool Image::normalize(){
+	float n = norm();
+
+	#if IMAGE_SAFE == 1
+		if( n < 1e-30){
+			std::cout << CONSOLE_RED << "ERROR norm is too small (" << n << ")" << CONSOLE_RESET << endl;
+			return false;
+		}
+	#endif
+
+	(*this) /= n;
+	return true;
+
+}
+
 // TODO: implement this with avx
 void Image::convolve(const Image& kernel,Image& destination) const{
 	#if IMAGE_SAFE == 1
@@ -201,6 +222,16 @@ void Image::abs() {
 }
 
 // TODO: implement this with avx
+void Image::highPass(float v,bool keepValue) {
+	for(uint i = 0;i < rows*cols;++i)data.get()[i] = (data.get()[i]) > v?(keepValue?data.get()[i]:1):0;
+}
+
+// TODO: implement this with avx
+void Image::lowPass(float v,bool keepValue) {
+	for(uint i = 0;i < rows*cols;++i)data.get()[i] = (data.get()[i]) < v?(keepValue?data.get()[i]:0):1;
+}
+
+// TODO: implement this with avx
 Point2D Image::centroid() const{
 	Point2DCentroid centroid;
 
@@ -211,47 +242,9 @@ Point2D Image::centroid() const{
 	return centroid.get();
 }
 
-class AngleAverage{
-public:
-	float A,W;
-
-	AngleAverage(){
-		A = 0;
-		W = 0;
-	}
-
-	void add(float a,float w){
-		if(w == 0)return;
-
-		if(a - A > M_PI/2)a -= M_PI;
-		else if(A - a > M_PI/2)A -= M_PI;
-		A = (W*A+w*a)/(W+w);
-
-		if(A < 0)A += M_PI;
-
-		W += w;
-	}
-
-	float getAverage(){
-		return A;
-	}
-
-	float getWeight(){
-		return W;
-	}
-};
-
-
-float signed_sqrt(float x){
-	if(x < 0){
-		return -sqrt(-x);
-	}else{
-		return sqrt(x);
-	}
-}
 
 // TODO: implement this with avx
-float Image::direction(Point2D& center,float& alpha,float& beta) const{
+float Image::direction(Point2D& center) const{
 	float a = 0;
 	float b = 0;
 	float c = 0;
@@ -259,18 +252,25 @@ float Image::direction(Point2D& center,float& alpha,float& beta) const{
 	for(uint j = 0; j < rows; ++j)for(uint i = 0;i < cols; ++i){
 		float w = this->operator()(i,j);
 		if(w > 0){
-			a += (i-center[0])*(i-center[0]);
-			b += (i-center[0])*(j-center[1]);
-			c += (j-center[1])*(j-center[1]);
+			float x = i - center[0];
+			float y = j - center[1];
+			a += x*x;
+			b += x*y;
+			c += y*y;
 		}
 	}
 
+	float T = a+c;
+	float L1 = T/2 + sqrt(T*T/4 - c);
+
+	return atan2(b,L1 - c);
+
+/*
 	float nv = sqrt(c*c + b*b);
 	float no = sqrt(a*a + b*b);
 
 	Point2D Y(b/nv,c/nv);
 	Point2D X(a/no,b/no);
-
 
 	float k = signed_sqrt(Y[0]*X[0] + Y[1]*X[1]);
 	//cout << "K: " << k << endl;
@@ -280,36 +280,20 @@ float Image::direction(Point2D& center,float& alpha,float& beta) const{
 
 	alpha = atan2(X[1] -k*Y[1],X[0] -k*Y[0]);
 	if(alpha < 0)alpha = M_PI + alpha;
-
-/*
-	float dist = fabs(alpha - beta);
-	if(dist > M_PI/2){
-
-	} dist = M_PI - dist;
-
-	if(dist < M_PI/2){
-		cout << "small" << endl;
-	}
 */
-
-	cout << a << " " << b << " " << c << endl;
-	cout << (c*c+b*b)/(b*b+a*a) << endl;
-
-	//if(beta-alpha > M_PI/2)alpha += M_PI/2;
-
-
-	//alpha = atan2(2*b*(a+c),a*a+c*c)/2 + M_PI/2;
-
-
-	AngleAverage avg;
-
-	for(uint j = 0; j < rows; ++j)for(uint i = 0;i < cols; ++i){
-		float w = this->operator()(i,j);
-		avg.add(atan2(j-center[1],i-center[0]),w);
-	}
-
-	return avg.getAverage();
 }
+
+
+Image& Image::operator *= (float k){
+	for(uint i = 0;i < rows*cols;++i)data.get()[i] *= k;
+	return (*this);
+}
+
+Image& Image::operator /= (float k){
+	(*this) *= 1/k;
+	return (*this);
+}
+
 
 cv::Mat Image::toMat() const{
 	return cv::Mat(rows, cols,CV_32FC1,data.get());

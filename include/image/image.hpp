@@ -43,16 +43,28 @@ public:
 	void getDataRange(float& min,float& max) const;
 	//remap the pixel values into given range, return false it was impossible to remap the values
 	bool setDataRange(float min,float max);
+	//get the norm of the image ( the sum of all the pixel values)
+	float norm() const;
+	//set the norm of the image to 1
+	bool normalize();
 
-	//convolution filters
+	//multi pixel functions
 	void convolve(const Image& kernel,Image& destination) const;
 
-	void gradient(Image& direction,Image& intensity) const;
-
+	//single pixel functions
 	void abs();
+	void highPass(float v,bool keepValue = false);
+	void lowPass(float v,bool keepValue = false);
+
 
 	Point2D centroid() const;
-	float direction(Point2D& center,float& alpha,float& beta) const;
+	float direction(Point2D& center) const;
+	void gradient(Image& direction,Image& intensity) const;
+
+
+	//operators
+	Image& operator *= (float k);
+	Image& operator /= (float k);
 
 	//convert the image to opencv Matrix ( actually it just wrap an opencv matrix around the data )
 	cv::Mat toMat() const;
