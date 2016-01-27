@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(tre) # Name of the project
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14") # C++14 mode
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14 -pthread -g") # C++14 mode
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic") # Enambles all warnings
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always") # Color output
 
@@ -40,3 +40,22 @@ target_link_libraries(dataset ${OpenCV_LIBS}) # link against OpenCV libs
 
 add_executable(image_test src/interface/image_test.cpp) # Compiles the executable
 target_link_libraries(image_test image dataset)
+
+
+#find_package(SDL2 REQUIRED)
+#include_directories(${SDL2_INCLUDE_DIR})
+set(SDL2_INCLUDE_DIR /usr/include/SDL2)
+set(SDL2_LIBRARY SDL2)
+
+include_directories(${SDL2_INCLUDE_DIR})
+
+# ============ GRAPHICS LIBRARY =============
+set(DIR_SOURCES_GRAPHICS "src/graphics")
+file(GLOB SOURCES_GRAPHICS ${DIR_SOURCES_GRAPHICS}/*.cpp)
+add_library(graphics ${SOURCES_GRAPHICS})
+target_link_libraries(graphics ${SDL2_LIBRARY}) # link against SDL2 libs
+# ============================================
+
+
+add_executable(graphics_test src/interface/graphics_test.cpp) # Compiles the executable
+target_link_libraries(graphics_test graphics)
