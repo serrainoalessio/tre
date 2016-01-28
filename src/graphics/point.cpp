@@ -11,4 +11,12 @@ namespace GUI{
         fillCircle(renderer,x,y,radius);
     }
 
+    bool Point::isInside(int x0,int y0){
+        return (x-x0)*(x-x0) + (y-y0)*(y-y0) <= radius*radius;
+    }
+
+    std::ostream& operator << (std::ostream &os, const Point &p){
+        os << "(" << p.x << " , " << p.y << ")";
+        return os;
+    }
 }

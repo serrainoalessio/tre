@@ -8,10 +8,12 @@
 
 #include <thread>
 #include <atomic>
+#include <mutex>
 
 
 #include "misc.hpp"
 
+#include "lock-free-vector.hpp"
 
 using namespace std;
 
@@ -40,6 +42,42 @@ namespace GUI{
         Point(){};
         Point(int _x,int _y,Color _color,int _radius = 5,bool _draggable = false);
         void draw(SDL_Renderer* renderer);
+
+        bool isInside(int x0,int y0);
+    };
+
+    std::ostream& operator << (std::ostream &os, const Point &p);
+
+
+    class Rectangle{
+    public:
+        int a,b;
+        Color color;
+        SDL_Rect rect;
+
+        Rectangle(){};
+        Rectangle(int _a,int _b,GUI::Color _color);
+
+        void draw(SDL_Renderer* renderer,Point* points);
+    };
+
+    class Bezier{
+    public:
+        vector<int>list;
+
+        Color color;
+        int samples;
+
+        int* data = nullptr;
+
+        Bezier(){};
+        Bezier(Bezier& b);
+        Bezier(GUI::Color _color,int _samples = 50);
+
+        void addPoint(int p);
+        void draw(SDL_Renderer* renderer,Point* points);
+
+        ~Bezier();
     };
 
     class WindowThread{
@@ -49,13 +87,26 @@ namespace GUI{
         SDL_Renderer* renderer;
 
         thread myThread;
+        mutex lock;
 
-        int drawnCount = 0;
+        int drawnPoints = 0;
+        int drawnRects = 0;
+        int drawnBeziers = 0;
 
 
         void init();
         void eventLoop();
+
+        bool drawRects();
+        bool drawPoints();
+        bool drawBeziers();
+
+
         void updateScreen();
+        void redraw();
+
+        int currentDragging = -1;
+        bool clickOnPoint(int x,int y);
 
     protected:
         //callbacks
@@ -66,9 +117,10 @@ namespace GUI{
 
         atomic<bool> closed {false};
         atomic<bool> quit {false};
-        atomic<int> pointCount {0};
 
-        vector<GUI::Point> points;
+        LockFreeVector<GUI::Point> points;
+        LockFreeVector<GUI::Rectangle> rects;
+        LockFreeVector<GUI::Bezier> beziers;
 
 
         WindowThread(int w = 640,int h = 480);
@@ -76,13 +128,13 @@ namespace GUI{
         void start(string title);
         void addPoint(const Point& p);
 
+        void reset(bool show = true);
+
         void wait();
     };
 
 
     class Window{
-
-
         void initialize_SDL();
 
     public:
@@ -94,7 +146,14 @@ namespace GUI{
         void wait();
 
         void onClick(void (*f)(WindowThread& win,int x,int y));
+        void reset();
 
+        int addPoint(Point p);
+        int addRectangle(Point a,Point b,Color color);
+        int addBezier(Bezier& bez);
+
+        void lock();
+        void unlock();
         /*
         Window(string title,int w = 640,int h = 480):win(w,h){
             if(!SDL_INITIALIZED){
