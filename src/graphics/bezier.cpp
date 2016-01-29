@@ -1,4 +1,4 @@
-#include "graphics/graphics.hpp"
+#include "graphics/bezier.hpp"
 
 int binomial(int n, int k)
 {

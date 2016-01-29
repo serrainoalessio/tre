@@ -1,4 +1,5 @@
-#include "graphics/graphics.hpp"
+#include "graphics/point.hpp"
+#include "graphics/color.hpp"
 
 namespace GUI{
 

@@ -1,4 +1,4 @@
-#include "graphics/graphics.hpp"
+#include "graphics.hpp"
 
 void click(GUI::WindowThread& win,int x,int y){
     GUI::Color color(255,0,0);

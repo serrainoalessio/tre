@@ -1,4 +1,11 @@
+#ifndef LOCK_FREE_VECTOR
+#define LOCK_FREE_VECTOR
+
+
 #include <atomic>
+#include "misc.hpp"
+
+#include <iostream>
 
 using namespace std;
 
@@ -44,3 +51,5 @@ public:
     }
 
 };
+
+#endif

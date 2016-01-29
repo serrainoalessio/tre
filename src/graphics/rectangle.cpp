@@ -1,4 +1,4 @@
-#include "graphics/graphics.hpp"
+#include "graphics/rectangle.hpp"
 
 namespace GUI{
 

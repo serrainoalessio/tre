@@ -1,8 +1,8 @@
-#include "graphics/graphics.hpp"
+#include "graphics/color.hpp"
 
 namespace GUI{
 
-    //constexpr Color RED(255,0,0); 
+    //constexpr Color RED(255,0,0);
 
     Color::Color(Uint8 _r,Uint8 _g,Uint8 _b,Uint8 _a):r(_r),g(_g),b(_b),a(_a){
 

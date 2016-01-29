@@ -1,7 +1,6 @@
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
+#ifndef GUI_WINDOW_HPP
+#define GUI_WINDOW_HPP
 
-//Using SDL and standard IO
 #include <SDL.h>
 #include <iostream>
 #include <vector>
@@ -10,75 +9,17 @@
 #include <atomic>
 #include <mutex>
 
-
-#include "misc.hpp"
-
-#include "lock-free-vector.hpp"
-
 using namespace std;
+
+#include "point.hpp"
+#include "color.hpp"
+#include "point.hpp"
+#include "rectangle.hpp"
+#include "bezier.hpp"
+#include "lock-free-vector.hpp"
 
 
 namespace GUI{
-
-    void fillCircle(SDL_Renderer* renderer,int x,int y,int r);
-
-    class Color{
-    public:
-        Uint8 r,g,b,a;
-
-        Color(){};
-        Color(Uint8 _r,Uint8 _g,Uint8 _b,Uint8 _a = 255);
-        void set(SDL_Renderer* renderer);
-    };
-
-    class Point{
-    public:
-        int x,y;
-        Color color;
-
-        int radius;
-        bool draggable;
-
-        Point(){};
-        Point(int _x,int _y,Color _color,int _radius = 5,bool _draggable = false);
-        void draw(SDL_Renderer* renderer);
-
-        bool isInside(int x0,int y0);
-    };
-
-    std::ostream& operator << (std::ostream &os, const Point &p);
-
-
-    class Rectangle{
-    public:
-        int a,b;
-        Color color;
-        SDL_Rect rect;
-
-        Rectangle(){};
-        Rectangle(int _a,int _b,GUI::Color _color);
-
-        void draw(SDL_Renderer* renderer,Point* points);
-    };
-
-    class Bezier{
-    public:
-        vector<int>list;
-
-        Color color;
-        int samples;
-
-        int* data = nullptr;
-
-        Bezier(){};
-        Bezier(Bezier& b);
-        Bezier(GUI::Color _color,int _samples = 50);
-
-        void addPoint(int p);
-        void draw(SDL_Renderer* renderer,Point* points);
-
-        ~Bezier();
-    };
 
     class WindowThread{
         friend class Window;
