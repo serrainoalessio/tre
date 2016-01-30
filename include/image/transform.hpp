@@ -14,11 +14,13 @@ class ImageTransform{
 
 public:
     Point2D center;
+    Point2D scaledCenter;
+    Point2D translation;
 
     Image transform;
 
     ImageTransform(){};
-    ImageTransform(Point2D _center,float angle);
+    ImageTransform(Point2D _center,Point2D _trasnlation,float angle);
 
     void scale(float sx,float sy = 0);
 

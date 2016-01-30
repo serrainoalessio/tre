@@ -64,6 +64,7 @@ public:
 	float direction(Point2D& center) const;
 	void gradient(Image& direction,Image& intensity) const;
 
+	void extractPoints(vector<Point2D>& points) const;
 
 	//operators
 	Image& operator *= (float k);

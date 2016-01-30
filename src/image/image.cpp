@@ -283,6 +283,15 @@ float Image::direction(Point2D& center) const{
 */
 }
 
+void Image::extractPoints(vector<Point2D>& points) const{
+	for(uint j = 0; j < rows; ++j)for(uint i = 0;i < cols; ++i){
+		float w = this->operator()(i,j);
+		if(w > 0){
+			points.push_back(Point2D(i,j));
+		}
+	}
+
+}
 
 Image& Image::operator *= (float k){
 	for(uint i = 0;i < rows*cols;++i)data.get()[i] *= k;

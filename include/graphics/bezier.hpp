@@ -14,7 +14,7 @@ namespace GUI{
     class Bezier{
     public:
         vector<int>list;
-
+        //vector<Point2D> fltPoints;
 
         Color color;
         int samples;

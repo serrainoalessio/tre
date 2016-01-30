@@ -17,3 +17,25 @@ cd tre
 cmake .
 make
 ```
+
+#File Format
+Every line begins with a letter that indicates the element type, followed by element properties
+```
+p -> point
+r -> rectangle
+l -> line
+b -> bezier curve
+```
+###Point
+```
+p <x> <y> <radius> <r> <g> <b> <draggable = false>
+```
+###Bezier curve
+```
+b <point indexes>...
+```
+for example
+```
+b 0 1 2 3
+```
+defines a bezier curve drawn using the first 4 points defined by the file
