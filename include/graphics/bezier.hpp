@@ -15,6 +15,7 @@ namespace GUI{
     public:
         vector<int>list;
 
+
         Color color;
         int samples;
 

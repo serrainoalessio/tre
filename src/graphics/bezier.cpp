@@ -46,7 +46,7 @@ namespace GUI{
             float t = step*i;
             float x = 0;
             float y = 0;
-            for(int j = 0;j < list.size();j++){
+            for(uint j = 0;j < list.size();j++){
                 x += binomial(list.size()-1,j)*pow(1-t,list.size()-j-1)*pow(t,j)*points[list[j]].x;
                 y += binomial(list.size()-1,j)*pow(1-t,list.size()-j-1)*pow(t,j)*points[list[j]].y;
             }

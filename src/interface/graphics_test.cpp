@@ -1,4 +1,16 @@
 #include "graphics.hpp"
+#include "image/image.hpp"
+#include "image/transform.hpp"
+#include "dataset/dataset.hpp"
+
+#include "misc.hpp"
+
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+using namespace cv;
+
 
 void click(GUI::WindowThread& win,int x,int y){
     GUI::Color color(255,0,0);
@@ -16,9 +28,31 @@ int main(){
     const GUI::Color blue(0,0,255);
     const GUI::Color white(255,255,255);
 
-    //create a window
-    GUI::Window win("test");
+    int displayScale = 10;
 
+    //read the image
+    Image test(imread("data/test.png",0));
+
+    //compute centroid and direction
+    Point2D center = test.centroid();
+    float dir = test.direction(center);
+
+    //compute the transformation
+    ImageTransform transformation(center,dir);
+    transformation.scale(displayScale);
+
+    //create the window
+    GUI::Window win("test",test.cols * displayScale,test.rows * displayScale);
+
+    //convert and upscale the image and add it to the window
+    Mat drawing = test.toColorMat(displayScale);
+    win.setBackground(drawing.data);
+
+    //wait for the window to close
+    win.wait();
+
+    return 0;
+    /*
     //add a new point when clicking on an empty area
     //win.onClick(click);
 
@@ -45,12 +79,9 @@ int main(){
     win.addBezier(curve1);
     win.addBezier(curve2);
 
-
-
     //create a rectangle using this 2 points
     //win.addRectangle(a,b,blue);
 
-    //wait for the window to close
-    win.wait();
     return 0;
+    */
 }

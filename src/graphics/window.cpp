@@ -66,8 +66,26 @@ namespace GUI{
                 }
             }
 
+            bool needRedraw = false;
+
+            if(background != nullptr){
+                if(background_tex != nullptr){
+                    SDL_DestroyTexture(background_tex);
+                }
+
+                background_tex = SDL_CreateTextureFromSurface(renderer,background);
+                SDL_FreeSurface(background);
+                background = nullptr;
+                SDL_RenderCopy(renderer,background_tex,nullptr,nullptr);
+                needRedraw = true;
+            }
+
             //draw only new items and update the screen if needed
-            if(drawRects() || drawBeziers() || drawPoints()){
+            if( drawRects() )needRedraw = true;
+            if( drawBeziers() )needRedraw = true;
+            if( drawPoints() )needRedraw = true;
+
+            if(needRedraw){
                 updateScreen();
             }
 
@@ -79,6 +97,12 @@ namespace GUI{
             lock.unlock();
 
             SDL_Delay(10);
+        }
+    }
+
+    void WindowThread::drawBackground(){
+        if(background_tex != nullptr){
+            SDL_RenderCopy(renderer,background_tex,nullptr,nullptr);
         }
     }
 
@@ -124,6 +148,7 @@ namespace GUI{
         drawnRects = 0;
         drawnBeziers = 0;
 
+        drawBackground();
         drawRects();
         drawBeziers();
         drawPoints();
@@ -134,6 +159,7 @@ namespace GUI{
     void WindowThread::reset(bool show){
          SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
          SDL_RenderClear(renderer);
+
          if(show)updateScreen();
     }
 
@@ -214,5 +240,17 @@ namespace GUI{
     void Window::reset(){
         win.points.clear();
         win.rects.clear();
+    }
+
+    void Window::setBackground(unsigned char* pixels){
+        lock();
+        win.background = SDL_CreateRGBSurfaceFrom((void*)pixels,
+            win.width,
+            win.height,
+            24,
+            win.width*3,
+            0xff0000, 0x00ff00, 0x0000ff, 0
+        );
+        unlock();
     }
 }

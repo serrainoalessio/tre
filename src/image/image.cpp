@@ -294,6 +294,20 @@ Image& Image::operator /= (float k){
 	return (*this);
 }
 
+void Image::multiply(const Image& b,Image& dst){
+	#if IMAGE_SAFE == 1
+		assert(cols == b.rows);
+		assert(dst.hasSize(rows,b.cols));
+	#endif
+
+	for(uint y = 0;y < dst.rows;y++){
+		for(uint x = 0;x < dst.cols;x++){
+			float v = 0;
+			for(uint i = 0;i < cols;i++)v += data.get()[y*cols+i] * b(i,x);
+			dst(x,y) = v;
+		}
+	}
+}
 
 cv::Mat Image::toMat() const{
 	return cv::Mat(rows, cols,CV_32FC1,data.get());
@@ -315,4 +329,21 @@ cv::Mat Image::toColorMat(int upscale) const{
 	}
 
 	return res;
+}
+
+
+std::ostream& operator << (std::ostream &os, const Image &img){
+	ios::fmtflags f( os.flags() );
+
+	os << std::setprecision(3) << std::fixed;
+	os << "( ";
+	for(uint y = 0;y < img.cols;y++){
+		for(uint x = 0;x < img.rows;x++)cout << img(x,y) << " ";
+		if(y != img.cols-1)cout << endl;
+	}
+	os << " )" << endl << std::scientific;
+
+	os.flags( f );
+
+	return os;
 }

@@ -5,6 +5,9 @@
 #include <opencv2/core/core.hpp>
 #include "geometry.hpp"
 
+#include <iostream>     // std::cout, std::fixed
+#include <iomanip>      // std::setprecision
+
 using namespace std;
 
 class Image{
@@ -66,10 +69,17 @@ public:
 	Image& operator *= (float k);
 	Image& operator /= (float k);
 
+	void multiply(const Image& b,Image& dst);
+	void invert(Image& dst);
+
+
+
 	//convert the image to opencv Matrix ( actually it just wrap an opencv matrix around the data )
 	cv::Mat toMat() const;
 	//convert the image to an 8-bit 3-channels rgb image, it allow to upscale the resulting image
 	cv::Mat toColorMat(int upscale = 1) const;
 };
+
+std::ostream& operator << (std::ostream &os, const Image &img);
 
 #endif

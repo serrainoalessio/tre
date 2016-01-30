@@ -58,4 +58,4 @@ target_link_libraries(graphics ${SDL2_LIBRARY}) # link against SDL2 libs
 
 
 add_executable(graphics_test src/interface/graphics_test.cpp) # Compiles the executable
-target_link_libraries(graphics_test graphics)
+target_link_libraries(graphics_test graphics image ${OpenCV_LIBS})

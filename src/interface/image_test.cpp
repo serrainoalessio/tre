@@ -3,6 +3,7 @@
  */
 
 #include "image/image.hpp"
+#include "image/transform.hpp"
 #include "dataset/dataset.hpp"
 
 #include "misc.hpp"
@@ -14,6 +15,30 @@
 using namespace cv;
 
 int main(){
+	Image test(imread("data/test.png",0));
+
+	Point2D center = test.centroid();
+
+	cout << center[0] << " " << center[1] << endl;
+
+	float dir = test.direction(center);
+
+	cout << "Direction " << dir*180.0/3.14159 << endl;
+
+	float displayScale = 10.0f;
+	Mat drawing = test.toColorMat(displayScale);
+
+	float dx = cos(dir);
+	float dy = sin(dir);
+
+	float radius = drawing.cols/4;
+
+	line(drawing,Point(center[0]*displayScale - radius*dx,center[1]*displayScale- radius*dy),Point(center[0]*displayScale+ radius*dx,center[1]*displayScale+ radius*dy),Scalar(0,0,255),2);
+
+	imshow("drawing",drawing);
+
+	waitKey(0);
+/*
 	MNIST mnist("data/train-images","data/train-labels");
 
 	for(int i = 0;true;i++){
@@ -36,32 +61,15 @@ int main(){
 
 		//test.highPass(0.5);
 
-		/*
-		test.reduceX(1);
-		test.reduceX(-1);
 
-		test.reduceY(1);
-		test.reduceY(-1);
-		*/
-
-		/*
-		Point2D center = test.centroid();
-
-		cout << center[0] << " " << center[1] << endl;
-
-		float alpha,beta;
-		float dir = test.direction(center,alpha,beta);
-
-		cout << "Direction " << dir*180.0/3.14159 << endl;
-		*/
 
 		Mat gui = test.toColorMat(10);
 
-		/*
+
 		float dx = cos(alpha);
 		float dy = sin(alpha);
 
-		line(gui,Point(center[0]*3.0f - 300*dx,center[1]*3.0f- 300*dy),Point(center[0]*3.0f+ 300*dx,center[1]*3.0f+ 300*dy),Scalar(0,0,255),2);
+		line(gui,Point(center[0]*displayScale - radius*dx,center[1]*3.0f- 300*dy),Point(center[0]*3.0f+ 300*dx,center[1]*3.0f+ 300*dy),Scalar(0,0,255),2);
 
 		dx = cos(beta);
 		dy = sin(beta);
@@ -96,7 +104,7 @@ int main(){
 		*/
 
 
-
+		/*
 		imshow("test",gui);
 		imshow("borders",convolved.toColorMat(10));
 		//imshow("borders",intensity.toColorMat(30));
@@ -104,4 +112,5 @@ int main(){
 
 		waitKey(0);
 	}
+	*/
 }

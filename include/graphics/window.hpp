@@ -27,6 +27,9 @@ namespace GUI{
         SDL_Window* window;
         SDL_Renderer* renderer;
 
+        SDL_Surface* background = nullptr;
+        SDL_Texture* background_tex = nullptr;
+
         thread myThread;
         mutex lock;
 
@@ -38,6 +41,7 @@ namespace GUI{
         void init();
         void eventLoop();
 
+        void drawBackground();
         bool drawRects();
         bool drawPoints();
         bool drawBeziers();
@@ -95,6 +99,8 @@ namespace GUI{
 
         void lock();
         void unlock();
+
+        void setBackground(unsigned char* pixels);
         /*
         Window(string title,int w = 640,int h = 480):win(w,h){
             if(!SDL_INITIALIZED){
