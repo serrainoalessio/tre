@@ -7,7 +7,7 @@ void ImageTransform::setRotation(float angle){
     transform(1,1) = cos(angle);
 }
 
-ImageTransform::ImageTransform(Point2D _center,Point2D _trasnlation,float angle):center(_center),scaledCenter(_center),translation(_trasnlation),transform(2,2){
+ImageTransform::ImageTransform(Point2D _center,Point2D _translation,float angle):center(_center),scaledCenter(_center),translation(_translation),transform(2,2){
 
     setRotation(angle);
 }
