@@ -57,10 +57,8 @@ namespace GUI{
                         }
                         break;
                     case SDL_KEYDOWN:
-                        switch( (char)event.key.keysym.sym ){
-                            case 's':
-                                cout << "Saving" << endl;
-                                break;
+                        if(this->onKey != nullptr){
+                            this->onKey(*this,(char)event.key.keysym.sym);
                         }
                         break;
                 }
@@ -167,6 +165,23 @@ namespace GUI{
         SDL_RenderPresent(renderer);
     }
 
+    void WindowThread::writeToFile(ofstream& file){
+        for(int i = 0; i < points.size(); i++) {
+            file << "p " << (points[i].x*2.0f/width - 1.0f) << " " << (1.0f - points[i].y*2.0f/height) << endl;
+        }
+        for(size_t i = 0; i < beziers.size(); i++) {
+            file << "b ";
+            for(size_t j = 0;j < beziers[i].list.size();j++){
+                file << beziers[i].list[j];
+                if(j < beziers[i].list.size()-1){
+                    file << " ";
+                }else{
+                    file << endl;
+                }
+            }
+        }
+    }
+
     void WindowThread::wait(){
         if(myThread.joinable() )myThread.join();
     }
@@ -210,6 +225,11 @@ namespace GUI{
     void Window::onClick(void (*f)(WindowThread& win,int x,int y)){
         win.onClick = f;
     }
+
+    void Window::onKey(void (*f)(WindowThread& win,char key)){
+        win.onKey = f;
+    }
+
 
     int Window::addPoint(Point p){
         win.points.push_back(p);

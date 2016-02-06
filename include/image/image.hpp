@@ -26,6 +26,10 @@ public:
 	Image(cv::Mat& img);
 	Image(int _rows,int _cols);
 	Image(int _rows,int _cols,initializer_list<float> _data);
+	Image(int _rows,int _cols,float* _data);
+
+	void setData(float* ptr);
+	void reset();
 
 	//operator to both get and set the value of a pixel (x,y)
 	float& operator() (int x,int y);
@@ -33,6 +37,11 @@ public:
 
 	float operator() (int x,int y) const;
 	float operator[] (uint i) const;
+
+	//map coordinates from image to euclidean plane [-1,1]x[-1,1]
+	void imgToEuclidean(float& x,float& y) const;
+	void euclideanToImg(float& x,float& y) const;
+
 
 	//linear interpolated get and set functions
 	float get(float x,float y);
@@ -43,9 +52,9 @@ public:
 	bool hasSize(uint _rows,uint _cols) const;
 
 	std::pair<float,float> getDataRange() const;
-	void getDataRange(float& min,float& max) const;
+	void getDataRange(float& min, float& max) const;
 	//remap the pixel values into given range, return false it was impossible to remap the values
-	bool setDataRange(float min,float max);
+	bool setDataRange(float min, float max);
 	//get the norm of the image ( the sum of all the pixel values)
 	float norm() const;
 	//set the norm of the image to 1
@@ -61,10 +70,11 @@ public:
 
 
 	Point2D centroid() const;
-	float direction(Point2D& center) const;
+	float direction(Point2D center) const;
 	void gradient(Image& direction,Image& intensity) const;
 
 	void extractPoints(vector<Point2D>& points) const;
+	void drawPoints(vector<Point2D>& points);
 
 	//operators
 	Image& operator *= (float k);

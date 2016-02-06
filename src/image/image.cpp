@@ -10,7 +10,7 @@
 
 using namespace cv;
 
-//enable some safe checks lowering performances
+//enable some safety checks lowering performances
 #define IMAGE_SAFE 1
 
 Image::Image(cv::Mat&& src):rows(src.rows),cols(src.cols){
@@ -37,6 +37,8 @@ Image::Image(cv::Mat& src):rows(src.rows),cols(src.cols){
 
 Image::Image(int _rows,int _cols):rows(_rows),cols(_cols){
 	this->allocate();
+
+	this->reset();
 }
 
 Image::Image(int _rows,int _cols,initializer_list<float> _data):rows(_rows),cols(_cols){
@@ -47,6 +49,19 @@ Image::Image(int _rows,int _cols,initializer_list<float> _data):rows(_rows),cols
 	#endif
 
 	std::copy(_data.begin(), _data.end(), data.get());
+}
+
+Image::Image(int _rows,int _cols,float* _data):rows(_rows),cols(_cols){
+	setData(_data);
+}
+
+void Image::setData(float* ptr){
+	data.reset(ptr);
+}
+
+void Image::reset(){
+	float* ptr = this->data.get();
+	for(uint i = 0;i < cols*rows;i++)ptr[i] = 0;
 }
 
 void Image::allocate(){
@@ -80,7 +95,19 @@ float Image::operator[] (uint i) const{
 	return data.get()[i];
 }
 
+void Image::imgToEuclidean(float& x,float& y) const{
+	x = x*2.0f/cols - 1.0f;
+	y = 1.0f - y*2.0f/rows;
+}
+
+void Image::euclideanToImg(float& x,float& y) const{
+	x = (x + 1.0f)*cols/2.0f;
+	y = (1.0f - y)*rows/2.0f;
+}
+
 float Image::get(float x,float y){
+	euclideanToImg(x,y);
+
 	float wx = x - floor(x);
 	float wy = y - floor(y);
 	float v = 0;
@@ -94,6 +121,8 @@ float Image::get(float x,float y){
 }
 
 void Image::add(float x,float y,float v){
+	euclideanToImg(x,y);
+
 	float wx = x - floor(x);
 	float wy = y - floor(y);
 
@@ -239,12 +268,16 @@ Point2D Image::centroid() const{
 		centroid.add(Point2D(i,j),this->operator()(i,j));
 	}
 
-	return centroid.get();
+	Point2D res = centroid.get();
+	imgToEuclidean(res[0],res[1]);
+	return res;
 }
 
 
 // TODO: implement this with avx
-float Image::direction(Point2D& center) const{
+float Image::direction(Point2D center) const{
+	euclideanToImg(center[0],center[1]);
+
 	float a = 0;
 	float b = 0;
 	float c = 0;
@@ -287,10 +320,19 @@ void Image::extractPoints(vector<Point2D>& points) const{
 	for(uint j = 0; j < rows; ++j)for(uint i = 0;i < cols; ++i){
 		float w = this->operator()(i,j);
 		if(w > 0){
-			points.push_back(Point2D(i,j));
+			float x = i;
+			float y = j;
+			imgToEuclidean(x,y);
+			points.push_back(Point2D(x,y));
 		}
 	}
 
+}
+
+void Image::drawPoints(vector<Point2D>& points){
+	for (size_t i = 0; i < points.size(); i++) {
+		this->add(points[i][0],points[i][1],1);
+	}
 }
 
 Image& Image::operator *= (float k){
@@ -312,10 +354,22 @@ void Image::multiply(const Image& b,Image& dst){
 	for(uint y = 0;y < dst.rows;y++){
 		for(uint x = 0;x < dst.cols;x++){
 			float v = 0;
-			for(uint i = 0;i < cols;i++)v += data.get()[y*cols+i] * b(i,x);
+			for(uint i = 0;i < cols;i++)v += data.get()[y*cols+i] * b(x,i);
 			dst(x,y) = v;
 		}
 	}
+}
+
+//TODO this implementation is suboptimal
+void Image::invert(Image& dst){
+	#if IMAGE_SAFE == 1
+		assert(dst.hasSize(cols,rows));
+	#endif
+
+	Mat A = this->toMat();
+	Mat B = A.inv(DECOMP_SVD);
+
+	memcpy((void*) dst.data.get(),(void*) B.data, sizeof(float)*cols*rows);
 }
 
 cv::Mat Image::toMat() const{
@@ -346,9 +400,9 @@ std::ostream& operator << (std::ostream &os, const Image &img){
 
 	os << std::setprecision(3) << std::fixed;
 	os << "( ";
-	for(uint y = 0;y < img.cols;y++){
-		for(uint x = 0;x < img.rows;x++)cout << img(x,y) << " ";
-		if(y != img.cols-1)cout << endl;
+	for(uint y = 0;y < img.rows;y++){
+		for(uint x = 0;x < img.cols;x++)os << img(x,y) << " ";
+		if(y != img.rows-1)os << endl;
 	}
 	os << " )" << endl << std::scientific;
 

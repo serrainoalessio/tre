@@ -11,6 +11,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include <fstream>
+
 using namespace cv;
 using namespace std;
 
@@ -40,13 +42,35 @@ Point2D getSize(std::vector<Point2D>& points){
     return Point2D(X-x, Y-y);
 }
 
+void keyPress(GUI::WindowThread& win,char k){
+    if(k == 's'){
+        cout << "Save model to file, enter filename: " << endl;
+        string name;
+        cin >> name;
+        string path = "models/" + name;
+
+        ofstream file;
+        file.open(path);
+
+        cout << "Saving to " << path <<" ...    ";
+
+        win.writeToFile(file);
+
+        cout << "OK" << endl;
+
+        file.close();
+    }
+}
+
 int main(){
+
     //define some colors
     const GUI::Color red(255,0,0);
     const GUI::Color green(0,255,0);
     const GUI::Color blue(0,0,255);
     const GUI::Color white(255,255,255);
 
+/*
     int displayScale = 10;
 
     //read the image
@@ -103,12 +127,6 @@ int main(){
 
 
 
-    /*
-    //convert and upscale the image and add it to the window
-    Mat drawing = test.toColorMat(displayScale);
-    win.setBackground(drawing.data);
-    */
-
     for(size_t i = 0; i < points.size(); i++){
         win.addPoint(GUI::Point(points[i][0],points[i][1],red,3));
     }
@@ -117,9 +135,13 @@ int main(){
     win.wait();
 
     return 0;
-    /*
+*/
     //add a new point when clicking on an empty area
     //win.onClick(click);
+
+    GUI::Window win("test",500,500);
+
+    win.onKey(keyPress);
 
     GUI::Bezier curve1(white);
     GUI::Bezier curve2(white);
@@ -144,9 +166,11 @@ int main(){
     win.addBezier(curve1);
     win.addBezier(curve2);
 
+    //wait for the window to close
+    win.wait();
+
     //create a rectangle using this 2 points
     //win.addRectangle(a,b,blue);
 
     return 0;
-    */
 }

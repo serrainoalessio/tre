@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 #include <thread>
@@ -56,6 +57,8 @@ namespace GUI{
     protected:
         //callbacks
         void (*onClick)(WindowThread& win,int x,int y) = nullptr;
+        void (*onKey)(WindowThread& win,char key) = nullptr;
+
 
     public:
         const int width,height;
@@ -75,6 +78,8 @@ namespace GUI{
 
         void reset(bool show = true);
 
+        void writeToFile(ofstream& file);
+
         void wait();
     };
 
@@ -91,6 +96,7 @@ namespace GUI{
         void wait();
 
         void onClick(void (*f)(WindowThread& win,int x,int y));
+        void onKey(void (*f)(WindowThread& win,char key));
         void reset();
 
         int addPoint(Point p);

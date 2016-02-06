@@ -2,7 +2,7 @@
 #define MISC_H
 
 #include <math.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 
 /*
   DEFINE IF A CONDITION IS LIKELY OR UNLIKELY TO HAPPEN ( helps optimizing the code )
@@ -17,6 +17,9 @@
 /*
 	MATH FUNCTIONS
 */
+
+#define RAD_TO_DEG 180.0f/M_PI
+#define DEG_TO_RAD M_PI/180.0f
 
 template<typename t> t randRange(t m,t M){
 	return m + (M-m)*t(rand())/RAND_MAX;

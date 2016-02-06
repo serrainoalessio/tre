@@ -28,7 +28,14 @@ find_package(OpenCV REQUIRED) # Required opencv for this project
 set(DIR_SOURCES_IMAGE "src/image")
 file(GLOB SOURCES_IMAGE ${DIR_SOURCES_IMAGE}/*.cpp)
 add_library(image ${SOURCES_IMAGE})
-target_link_libraries(image ${OpenCV_LIBS} point) # link against OpenCV libs
+target_link_libraries(image ${OpenCV_LIBS} point)
+# ============================================
+
+# ============== MODEL LIBRARY ===============
+set(DIR_SOURCES_MODEL "src/models")
+file(GLOB SOURCES_MODEL ${DIR_SOURCES_MODEL}/*.cpp)
+add_library(model ${SOURCES_MODEL})
+target_link_libraries(model image point)
 # ============================================
 
 # ============= DATASET LIBRARY ==============
@@ -39,7 +46,7 @@ target_link_libraries(dataset ${OpenCV_LIBS}) # link against OpenCV libs
 # ============================================
 
 add_executable(image_test src/interface/image_test.cpp) # Compiles the executable
-target_link_libraries(image_test image dataset)
+target_link_libraries(image_test model image dataset)
 
 
 #find_package(SDL2 REQUIRED)

@@ -29,7 +29,6 @@ namespace GUI{
     };
 
     std::ostream& operator << (std::ostream &os, const Point &p);
-
 }
 
 #endif
