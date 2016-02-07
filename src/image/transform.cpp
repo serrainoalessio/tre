@@ -25,7 +25,7 @@ void ImageTransform::scale(float sx,float sy){
     translation[1] *= sy;
 }
 
-void ImageTransform::apply(Point2D& point){
+void ImageTransform::apply(Point2D& point) const{
     float x = point[0] - translation[0];
     float y = point[1] - translation[1];
 
@@ -33,7 +33,7 @@ void ImageTransform::apply(Point2D& point){
     point[1] = x*transform(0,1) + y*transform(1,1) + translation[1];
 }
 
-void ImageTransform::apply(vector<Point2D>& points){
+void ImageTransform::apply(vector<Point2D>& points) const{
     for (size_t i = 0; i < points.size(); i++) {
         apply(points[i]);
     }

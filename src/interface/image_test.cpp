@@ -3,7 +3,7 @@
  */
 
 #include "image/image.hpp"
-#include "models/bezier.hpp"
+#include "models/model.hpp"
 
 #include "image/transform.hpp"
 #include "dataset/dataset.hpp"
@@ -23,78 +23,62 @@ float distance(const Point2D& a,const Point2D& b){
 	return dx*dx + dy*dy;
 }
 
-int main(){
+#define DISPLAY_SCALE  10
 
-	ifstream file("models/otto");
-
-	string line;
-	Point2D point;
-
-	while(std::getline(file, line)){
-		switch(line[0]){
-			case 'p':
-				sscanf(&line[1],"%f %f",&point[0],&point[1]);
-				cout << point[0] << " " << point[1] << endl;
-				break;
-			case 'b':
-				int i = 1;
-				int count = 0;
-				int* points = new int[100];
-				while(sscanf(&line[i],"%d",&points[count]) == 1){
-					i+= 2;
-					count++;
-				}
-				for (size_t i = 0; i < count; i++) {
-					cout << points[i] << " ";
-				}
-				cout << endl;
-				break;
-		}
-	}
-
-
-	int displayScale = 10;
-
-    //read the image
-    Image test(imread("data/test.png",0));
-	Image fitted(test.rows,test.cols);
-
-	//create the model
-	Bezier model(4,100);
-	model.generators.push_back(Point2D(0,1));
-	model.generators.push_back(Point2D(-0.8,0.5));
-	model.generators.push_back(Point2D(0.8,-0.5));
-	model.generators.push_back(Point2D(0,-1));
-
-	//draw
-	model.computePoints();
-	fitted.drawPoints(model.points);
-	fitted.setDataRange(0,1);
-	imshow("test",test.toColorMat(displayScale));
-	imshow("fitted",fitted.toColorMat(displayScale));
+inline void draw(Image& test,Image& fitted,Model& model){
+	model.draw(fitted);
+	imshow("test",test.toColorMat(DISPLAY_SCALE));
+	imshow("fitted",fitted.toColorMat(DISPLAY_SCALE));
 	waitKey(0);
 	fitted.reset();
+}
 
-
+ImageTransform getImageTransform(Image& test){
 	//compute centroid and direction
     Point2D centroid = test.centroid();
     float dir = test.direction(centroid);
 
-	//extractImage Points
-	vector<Point2D>imgPoints;
-    test.highPass(0.3);
-    test.extractPoints(imgPoints);
-
     //compute the transformation
-    ImageTransform transformation(centroid,dir);
-    transformation.apply(model.generators);
+    return ImageTransform(centroid,dir);
+}
+
+int main(){
+    //read the image
+    Image test(imread("data/test.png",0));
+	Image fitted(test.rows,test.cols);
+
+	//read the model
+	Model model("models/otto");
+
+	//draw initial state
+	model.computeSamples();
+	draw(test,fitted,model);
+
+	//extract image Points
+	vector<Point2D>imgPoints;
+	test.highPass(0.3);
+	test.extractPoints(imgPoints);
+
+	//roughly align the model to the image
+	ImageTransform transformation = getImageTransform(test);
+	model.apply(transformation); //WARING HERE the model should has no transformation ( centered and vertical )
+
+	//redraw
+	model.computeSamples();
+	draw(test,fitted,model);
+
+	return 0;
+
+	/*
+
+
 
 	//draw
 	model.computePoints();
 	fitted.drawPoints(model.points);
 	fitted.setDataRange(0,1);
-	imshow("test",test.toColorMat(displayScale));
-	imshow("fitted",fitted.toColorMat(displayScale));
+	imshow("test",test.toColorMat(DISPLAY_SCALE));
+	imshow("fitted",fitted.toColorMat(DISPLAY_SCALE));
 	waitKey(0);
 	fitted.reset();
 
@@ -120,46 +104,15 @@ int main(){
 			}
 
 			model.points[i] = imgPoints[winner];
-			/*
-			forces[i] += imgPoints[winner] - model.points[i];
-			count[i] += 1;*/
 		}
-
-		/*
-		for(size_t i = 0; i < imgPoints.size(); i++){
-			//find the closest point
-			int winner = 0;
-			float bestDistance = distance(imgPoints[i],model.points[0]);
-			for(uint j = 1;j < model.points.size();++j){
-				float dist = distance(imgPoints[i],model.points[j]);
-				if(dist < bestDistance){
-					winner = j;
-					bestDistance = dist;
-				}
-			}
-
-			forces[winner] += imgPoints[i] - model.points[winner];
-			count[winner] += 1;
-		}
-		*/
-
-		/*
-		for (size_t i = 0; i < forces.size(); i++) {
-			if(count[i] > 0){
-				forces[i] /= count[i];
-			}
-			cout << forces[i][0] << " " << forces[i][1] << endl;
-			model.points[i] += forces[i];
-		}*/
-
 		model.computeGenerators();
 		model.computePoints();
 
 		fitted.drawPoints(model.points);
 		fitted.setDataRange(0,1);
 
-		imshow("test",test.toColorMat(displayScale));
-		imshow("fitted",fitted.toColorMat(displayScale));
+		imshow("test",test.toColorMat(DISPLAY_SCALE));
+		imshow("fitted",fitted.toColorMat(DISPLAY_SCALE));
 
 		waitKey(0);
 
@@ -167,7 +120,7 @@ int main(){
 
 	}
 
-
+*/
 
 /*	float data[] = {0,1,1,0,1,0};
 
@@ -203,15 +156,15 @@ int main(){
 
 	cout << "Direction " << dir*180.0/3.14159 << endl;
 
-	float displayScale = 10.0f;
-	Mat drawing = test.toColorMat(displayScale);
+	float DISPLAY_SCALE = 10.0f;
+	Mat drawing = test.toColorMat(DISPLAY_SCALE);
 
 	float dx = cos(dir);
 	float dy = sin(dir);
 
 	float radius = drawing.cols/4;
 
-	line(drawing,Point(center[0]*displayScale - radius*dx,center[1]*displayScale- radius*dy),Point(center[0]*displayScale+ radius*dx,center[1]*displayScale+ radius*dy),Scalar(0,0,255),2);
+	line(drawing,Point(center[0]*DISPLAY_SCALE - radius*dx,center[1]*DISPLAY_SCALE- radius*dy),Point(center[0]*DISPLAY_SCALE+ radius*dx,center[1]*DISPLAY_SCALE+ radius*dy),Scalar(0,0,255),2);
 
 	imshow("drawing",drawing);
 
@@ -249,7 +202,7 @@ int main(){
 		float dx = cos(alpha);
 		float dy = sin(alpha);
 
-		line(gui,Point(center[0]*displayScale - radius*dx,center[1]*3.0f- 300*dy),Point(center[0]*3.0f+ 300*dx,center[1]*3.0f+ 300*dy),Scalar(0,0,255),2);
+		line(gui,Point(center[0]*DISPLAY_SCALE - radius*dx,center[1]*3.0f- 300*dy),Point(center[0]*3.0f+ 300*dx,center[1]*3.0f+ 300*dy),Scalar(0,0,255),2);
 
 		dx = cos(beta);
 		dy = sin(beta);

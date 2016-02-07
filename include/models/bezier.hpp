@@ -3,21 +3,32 @@
 
 #include <vector>
 #include "image/image.hpp"
+#include "misc.hpp"
+
 
 using namespace std;
 
 class Bezier{
 public:
+    uint* generatorsIndexes;
+    Point2D* generators;
+    Point2D* generatorsNew;
 
-    vector<Point2D> generators;
-    vector<Point2D> points;
+    Point2D* samples;
 
-    Image W,W_inv,B,C;
+    const uint generatorCount,sampleCount;
 
-    Bezier(int generatorCount,int sampleCount);
+    Image W,W_inv,Gen,GenN,Samples;
 
-    void computePoints();
+
+    Bezier(uint gc,uint sc,uint* indexes);
+
+    void setGenerators(vector<Point2D>& points);
+
+    void computeSamples();
     void computeGenerators();
+
+    void draw(Image& img);
 };
 
 #endif

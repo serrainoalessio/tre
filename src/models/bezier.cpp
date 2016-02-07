@@ -13,18 +13,27 @@ float binomial(float n, float k){
 }
 
 /* gc = number of generators, sc = number of samples */
-Bezier::Bezier(int gc,int sc): W(sc, gc), W_inv(gc, sc), B(gc,2), C(sc,2) {
-    generators.reserve(gc);
-    points.resize(sc);
+Bezier::Bezier(uint gc, uint sc, uint* indexes):
+    generatorCount(gc), sampleCount(sc),
+    W(sc, gc), W_inv(gc, sc), Gen(gc,2), GenN(gc,2), Samples(sc,2)
+{
+    generatorsIndexes = new uint[gc];
+    generators = new Point2D[gc];
+    generatorsNew = new Point2D[gc];
+    samples = new Point2D[sc];
 
-    B.setData((float*) &generators[0]);
-    C.setData((float*) &points[0]);
+    Gen.setData((float*) &generators[0]);
+    GenN.setData((float*) &generatorsNew[0]);
+    Samples.setData((float*) &samples[0]);
+
+    //copy locally the generators indexes
+    memcpy(generatorsIndexes, indexes, sizeof(uint)*gc);
 
     //compute the weight matrix
     float step = 1.0f/(sc - 1);
-    for(int j = 0;j < sc;j++){
+    for(uint j = 0;j < sc;j++){
         float t = step*j;
-        for(int i = 0;i < gc;i++){
+        for(uint i = 0;i < gc;i++){
             W(i,j) = binomial(gc-1,i)*pow(1-t,gc-i-1)*pow(t,i);
         }
     }
@@ -32,10 +41,28 @@ Bezier::Bezier(int gc,int sc): W(sc, gc), W_inv(gc, sc), B(gc,2), C(sc,2) {
     W.invert(W_inv);
 }
 
-void Bezier::computePoints(){
-    W.multiply(B,C);
+void Bezier::setGenerators(vector<Point2D>& points){
+    for (size_t i = 0; i < generatorCount; i++) {
+        uint index = generatorsIndexes[i];
+        if(index >= points.size()){
+            cout << CONSOLE_RED << "Error in bezier curve, point index " << index << " is out of range" << CONSOLE_RESET << endl;
+        }else{
+            generators[i] = points[index];
+        }
+    }
+}
+
+void Bezier::computeSamples(){
+    W.multiply(Gen,Samples);
 }
 
 void Bezier::computeGenerators(){
-    W_inv.multiply(C,B);
+    W_inv.multiply(Samples,GenN);
+}
+
+
+void Bezier::draw(Image& img){
+    for (size_t i = 0; i < sampleCount; i++) {
+        img.add(samples[i][0],samples[i][1],1.0f);
+    }
 }

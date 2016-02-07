@@ -14,7 +14,6 @@ class ImageTransform{
 
 public:
     Point2D translation;
-
     Image transform;
 
     ImageTransform(){};
@@ -22,8 +21,8 @@ public:
 
     void scale(float sx,float sy = 0);
 
-    void apply(Point2D& point);
-    void apply(vector<Point2D>& points);
+    void apply(Point2D& point) const;
+    void apply(vector<Point2D>& points) const;
 
 };
 
